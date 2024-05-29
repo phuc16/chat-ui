@@ -75,7 +75,7 @@
             
             try {
             const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/auth/reset-password`,
+                `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/reset-password`,
                 {
                     method: "PUT",
                     headers: {

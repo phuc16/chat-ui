@@ -44,7 +44,7 @@ export default function LoginForm() {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_SERVER_HOST}/api/auth/login`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/login`,
         {
           method: "POST",
           headers: {

@@ -35,7 +35,7 @@ export const getUserDataFromCookies = async () => {
     if (token) {
         try {
             const response = await fetch(
-            `${process.env.REACT_APP_SERVER_HOST}/api/user/profile`,
+            `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/info`,
             {
                 method: "GET",
                 headers: {

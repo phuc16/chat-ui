@@ -75,7 +75,7 @@ export default function RegisterUser() {
         
         try {
             const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/auth/register`,
+                `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {
