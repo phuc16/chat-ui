@@ -32,8 +32,8 @@
         const sendOTP = async (phoneNumber) => {
             try {
                 console.log(phoneNumber);
-                const recapcha = new RecaptchaVerifier(auth, "recaptcha", {})
-                await signInWithPhoneNumber(auth, phoneNumber, recapcha)
+                const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {})
+                await signInWithPhoneNumber(auth, phoneNumber, recaptcha)
                     .then((confirmationResult) => {
                         setIsSendOtp(false);
                         console.log(confirmationResult);
@@ -75,7 +75,7 @@
             
             try {
             const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/users/reset-password`,
+                `${process.env.REACT_APP_SERVER_HOST}/api/auth/reset-password`,
                 {
                     method: "PUT",
                     headers: {

@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import jwtDecode from 'jwt-decode';
+
 import CryptoJS from 'crypto-js';
 
 const secretKey = 'secret';
@@ -23,3 +27,41 @@ export const decryptData = (encryptedData) => {
         return null;
     }
 };
+
+
+export const getUserDataFromCookies = async () => {
+    const token = localStorage.getItem("token");
+    
+    if (token) {
+        try {
+            const response = await fetch(
+            `${process.env.REACT_APP_SERVER_HOST}/api/user/profile`,
+            {
+                method: "GET",
+                headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+                }
+            },
+            );
+            const data = await response.json();
+            if (response.status == 401) {
+                console.error("Failed get profile");
+                return null;
+            }
+    
+            if (response.ok) {
+                console.log("API call successful");
+                console.log(data)
+                return data
+            } else {
+                console.error("API call failed");
+                return data
+            }
+        }   
+        catch (error) {
+            console.error("Error calling API:", error);
+            return null
+        }
+    }
+}
