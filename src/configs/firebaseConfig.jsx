@@ -5,13 +5,13 @@ import { getAuth } from "@firebase/auth";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBAwJs0yYf4B_ePhIG18Z0tskYnF1YU8w8",
-  authDomain: "app-chat-422113.firebaseapp.com",
-  projectId: "app-chat-422113",
-  storageBucket: "app-chat-422113.appspot.com",
-  messagingSenderId: "765557075609",
-  appId: "1:765557075609:web:c924cd77ecb647a4395208",
-  measurementId: "G-84TLL8T87W"
+    apiKey: "AIzaSyCp7x0lnETOmNhTfxbtyXj3jrkihhIOhKo",
+    authDomain: "gnoodd-0211.firebaseapp.com",
+    projectId: "gnoodd-0211",
+    storageBucket: "gnoodd-0211.appspot.com",
+    messagingSenderId: "102954778952",
+    appId: "1:102954778952:web:91f759c58b6b114557337d",
+    measurementId: "G-5WE4H03W6H"
 };
 
 // const firebaseConfig = {

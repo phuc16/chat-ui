@@ -168,7 +168,7 @@ const Conversation = () => {
 
   const uploadMultiImageToS3 = async (files) => {
     try {
-      const uploadPromises = files.map(async (file) => {
+      const uploadPromises = files?.map(async (file) => {
         const formData = new FormData();
         formData.append("file", file);
         const response = await fetch(`${process.env.SERVICE_UPLOAD}`, {
@@ -183,7 +183,7 @@ const Conversation = () => {
       });
 
       const imageUrls = await Promise.all(uploadPromises);
-      const imageMessageArray = imageUrls.map((url) => ({
+      const imageMessageArray = imageUrls?.map((url) => ({
         key: "image",
         value: url,
       }));
@@ -295,7 +295,7 @@ const Conversation = () => {
 
   useEffect(() => {
     const conservation = JSON.parse(localStorage.getItem("conversations"));
-    const filteredConversations = conservation.filter(
+    const filteredConversations = conservation?.filter(
       (chat) => chat.chatName === chatName,
     );
     // setConservationFriend(filteredConversations);
@@ -346,7 +346,7 @@ const Conversation = () => {
     // console.table({ id, x, y, token });
     try {
       const response = await axios.get(
-        `${process.env.HOST}/api/v1/chat/x-to-y?id=${id}&x=${x}&y=${y}&timestamp=${timestamp}`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/chat/x-to-y?id=${id}&x=${x}&y=${y}&timestamp=${timestamp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -422,11 +422,11 @@ const Conversation = () => {
 
       // Tạo một bản đồ (map) giữa messageID và object message
       const messageMap = new Map(
-        messagesNoHandle.map((message) => [message.messageID, message]),
+        messagesNoHandle?.map((message) => [message.messageID, message]),
       );
 
       // Lặp qua mỗi message để thay thế parentID bằng object message tương ứng
-      messagesNoHandle.forEach((message) => {
+      messagesNoHandle?.forEach((message) => {
         if (message.parentID) {
           const parentMessage = messageMap.get(message.parentID);
           if (parentMessage) {
@@ -437,7 +437,7 @@ const Conversation = () => {
       // console.log("MessagesNoHandle:", messagesNoHandle);
       setMessages(messagesNoHandle);
     };
-    const newSocket = new WebSocket(`${process.env.SOCKET_CHAT}/ws/chat/${id}`);
+    const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_CHAT}/ws/chat/${id}`);
     newSocket.onopen = () => {
       // console.log("WebSocket connected >>>>>>>>HUy");
     };
@@ -490,6 +490,7 @@ const Conversation = () => {
         parentID: null,
         contents: [],
       };
+      console.log(message)
       if (parentID) {
         message.parentID = parentID;
         setOpenCompReplyInput(false);
@@ -522,10 +523,10 @@ const Conversation = () => {
           });
         } else if (contentType === "multiImage") {
           console.log("MessageContent>>>>>>>>>>>>>>:", messageContent);
-          const clonedContent = messageContent.map((element) => ({
+          const clonedContent = messageContent?.map((element) => ({
             ...element,
           }));
-          clonedContent.forEach((element) => {
+          clonedContent?.forEach((element) => {
             message.contents.push({
               key: "image",
               value: element.value,
@@ -643,12 +644,26 @@ const Conversation = () => {
                   // setMessages((prevMessages) => [...prevMessages, jsonData]);
                   // Tạo một bản đồ (map) giữa messageID và object message
                   const messageMap = new Map(
-                    messages.map((message) => [message.messageID, message]),
+                    messages?.map((message) => [message.messageID, message]),
                   );
+                  console.log(messageMap)
                   const parentMessage = messageMap.get(jsonData.parentID);
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    {
+                  if (messages?.length > 0) {
+                    setMessages((prevMessages) => [...prevMessages,
+                      {
+                        messageID: jsonData.id,
+                        userID: jsonData.userID,
+                        userAvatar: jsonData.userAvatar,
+                        userName: jsonData.userName,
+                        timestamp: jsonData.timestamp,
+                        contents: jsonData.contents,
+                        parentID: parentMessage,
+                        hiddens: [],
+                        recall: false,
+                      },
+                    ]);
+                  } else {
+                    setMessages([{
                       messageID: jsonData.id,
                       userID: jsonData.userID,
                       userAvatar: jsonData.userAvatar,
@@ -658,8 +673,8 @@ const Conversation = () => {
                       parentID: parentMessage,
                       hiddens: [],
                       recall: false,
-                    },
-                  ]);
+                    }])
+                  }
                   console.log("Run");
                   console.log("Message____________________:", messages);
                 }
@@ -667,7 +682,7 @@ const Conversation = () => {
             }
             if (jsonData.tcm === "TCM05") {
               const messageIDToRecall = jsonData.messageID;
-              const updatedMessages = messages.map((msg) => {
+              const updatedMessages = messages?.map((msg) => {
                 if (
                   msg.messageID === messageIDToRecall ||
                   msg.id === messageIDToRecall
@@ -694,7 +709,7 @@ const Conversation = () => {
             ) {
               const messageIDToDelete = messageDeletedID;
               // Lọc ra các tin nhắn mà không có messageIDToDelete
-              const updatedMessages = messages.filter(
+              const updatedMessages = messages?.filter(
                 (msg) => msg.messageID !== messageIDToDelete,
               );
               setMessageDeletedID("");
@@ -712,7 +727,7 @@ const Conversation = () => {
               );
               // const messageIDToDelete = messageRecalledID;
               // // Lọc ra các tin nhắn mà không có messageIDToDelete
-              // const updatedMessages = messages.filter(
+              // const updatedMessages = messages?.filter(
               //   (msg) => msg.messageID !== messageIDToDelete,
               // );
               // // setMessageRecalledID("");
@@ -721,7 +736,7 @@ const Conversation = () => {
               // console.log("Updated messages after deleting:", updatedMessages);
 
               const messageIDToRecall = messageRecalledID;
-              const updatedMessages = messages.map((msg) => {
+              const updatedMessages = messages?.map((msg) => {
                 if (
                   msg.messageID === messageIDToRecall ||
                   msg.id === messageIDToRecall
@@ -779,13 +794,26 @@ const Conversation = () => {
       console.log("Sent message:", sentMessage);
       // Tạo một bản đồ (map) giữa messageID và object message
       const messageMap = new Map(
-        messages.map((message) => [message.messageID, message]),
+        messages?.map((message) => [message.messageID, message]),
       );
       const parentMessage = messageMap.get(sentMessage.parentID);
-
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
+      if (messages?.length > 0) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            messageID: sentMessage.id,
+            userID: sentMessage.userID,
+            userAvatar: sentMessage.userAvatar,
+            userName: sentMessage.userName,
+            timestamp: sentMessage.timestamp,
+            contents: sentMessage.contents,
+            parentID: parentMessage,
+            hiddens: [],
+            recall: false,
+          },
+        ]);
+      } else {
+        setMessages([{
           messageID: sentMessage.id,
           userID: sentMessage.userID,
           userAvatar: sentMessage.userAvatar,
@@ -795,8 +823,8 @@ const Conversation = () => {
           parentID: parentMessage,
           hiddens: [],
           recall: false,
-        },
-      ]);
+        }])
+      }
       setSentMessage(null); // Đặt lại giá trị của sentMessage về null sau khi cập nhật tin nhắn
     }
   }, [sentMessage]);
@@ -819,7 +847,7 @@ const Conversation = () => {
     const fetchContact = async () => {
       try {
         const response = await fetch(
-          `${process.env.HOST}/api/v1/user/info/${userIDFromCookies}`,
+          `${process.env.REACT_APP_SERVER_HOST}/api/v1/user/info/${userIDFromCookies}`,
           {
             credentials: "include",
             headers: {
@@ -836,7 +864,7 @@ const Conversation = () => {
         const contact = data.conversations;
         const chatID = searchParams.get("id");
         // console.log("ChatID:", chatID);
-        setContact(contact.filter((c) => c.chatID !== chatID));
+        setContact(contact?.filter((c) => c.chatID !== chatID));
       } catch (error) {
         console.error("Error fetching conversations:", error);
       }
@@ -865,17 +893,17 @@ const Conversation = () => {
       setSelectedContactObjs((prevNames) => [...prevNames, obj]);
     } else {
       setSelectedContacts((prevSelected) =>
-        prevSelected.filter((contactId) => contactId !== id),
+        prevSelected?.filter((contactId) => contactId !== id),
       );
       setSelectedContactObjs((prevNames) =>
-        prevNames.filter((item) => item.chatID !== obj.chatID),
+        prevNames?.filter((item) => item.chatID !== obj.chatID),
       );
     }
   };
 
   const renderImageInForwadMsg = (contents) => {
     if (contents && contents.length > 0) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
             <img
@@ -892,7 +920,7 @@ const Conversation = () => {
 
   const renderContent = (contents) => {
     if (contents && contents.length > 0) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         // console.log("Content:", content);
         if (content.key === "image") {
           return "[Hình ảnh]";
@@ -928,7 +956,7 @@ const Conversation = () => {
     if (shareContent && selectedContactObjs) {
       for (const obj of selectedContactObjs) {
         const newSocket = new WebSocket(
-          `${process.env.SOCKET_CHAT}/ws/chat/${obj.chatID}`,
+          `${process.env.REACT_APP_SOCKET_CHAT}/ws/chat/${obj.chatID}`,
         );
         newSocket.onopen = () => {
           // console.log("newSocket:", newSocket);
@@ -998,7 +1026,7 @@ const Conversation = () => {
         try {
           const response = await fetch(
             `${
-              process.env.HOST
+              process.env.REACT_APP_SERVER_HOST
             }/api/v1/chat/search-bkw?chatID=${searchParams.get(
               "id",
             )}&y=20&key=${value}`,
@@ -1054,7 +1082,7 @@ const Conversation = () => {
   const [socketSent, setSocketSent] = useState(false);
 
   useEffect(() => {
-    const newSocket = new WebSocket(`${process.env.SOCKET_CHAT}/ws/chat/${id}`);
+    const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_CHAT}/ws/chat/${id}`);
     newSocket.onopen = () => {
       // console.log("WebSocket connected >>>>>>>>HUy");
     };
@@ -1120,7 +1148,7 @@ const Conversation = () => {
   const handleClickRightBar = () => {
     console.log("Click");
     setOpenRightBar(!openRightBar);
-    const imageMessages = messages.filter(
+    const imageMessages = messages?.filter(
       (message) =>
         message.contents.some((content) => content.key === "image") &&
         message.hidden.length === 0 &&
@@ -1128,11 +1156,11 @@ const Conversation = () => {
     );
     setListImage(imageMessages);
 
-    const linkMessages = messages.filter((message) => {
+    const linkMessages = messages?.filter((message) => {
       return message.contents.some((content) => content.key === "link");
     });
     // Lọc ra các tin nhắn thỏa mãn các điều kiện
-    // const filteredMessages = messages.filter((message) => {
+    // const filteredMessages = messages?.filter((message) => {
     //   return (
     //     message.contents.some((content) => content.key === "link") && // có key là 'link'
     //     message.hidden.length === 0 && // hidden.length = 0
@@ -1142,7 +1170,7 @@ const Conversation = () => {
 
     setListLink(linkMessages);
 
-    const fileMessages = messages.filter((message) => {
+    const fileMessages = messages?.filter((message) => {
       return message.contents.some((content) => {
         // Kiểm tra xem khóa của nội dung có chứa ít nhất hai dấu "|" không
         return (content.key.match(/\|/g) || []).length >= 2;
@@ -1299,7 +1327,7 @@ const Conversation = () => {
                 }`}
               >
                 <div className={`w-full `}>
-                  {contact.map((item, index) => (
+                  {contact?.map((item, index) => (
                     <div key={index} className="flex items-center p-2">
                       {/* Checkbox */}
                       {/* <input
@@ -1356,7 +1384,7 @@ const Conversation = () => {
                     </span>
                   </h2>
                   <div className="mt-2">
-                    {selectedContactObjs.map((item, index) => (
+                    {selectedContactObjs?.map((item, index) => (
                       <div
                         key={index}
                         className="mb-[6px] mr-3 flex h-[32px] items-center rounded-[30px] border bg-[#E7EFFD] p-1"
@@ -1486,7 +1514,7 @@ const Conversation = () => {
                                 Tin nhắn
                               </span>
                             </div>
-                            {resultSearch.map((item, index) => (
+                            {resultSearch?.map((item, index) => (
                               <AvatarNameItemMessage
                                 key={index}
                                 item={item}
@@ -1721,14 +1749,14 @@ const Conversation = () => {
               {/* <Message sender="other" content="Xin chào!" timestamp="15:30" />
           <Message sender="me" content="Chào bạn!" timestamp="15:32" />
           Thêm tin nhắn khác ở đây */}
-              {/* {messages.map((message, index) => ( */}
+              {/* {messages?.map((message, index) => ( */}
               {messages
-                .filter(
+                ?.filter(
                   (message) =>
                     !message.hidden ||
                     !message.hidden.includes(userIDFromCookies),
                 )
-                .map((message, index) => (
+                ?.map((message, index) => (
                   <MessageDetail
                     key={index}
                     message={message}
@@ -2075,7 +2103,7 @@ const Conversation = () => {
                       Ảnh/Video
                     </h2>
                     <div className="-mx-2 flex flex-wrap pr-1">
-                      {listImage.map((item, index) => (
+                      {listImage?.map((item, index) => (
                         <div key={index} className="mb-2 w-1/4 px-2">
                           <div
                             className="flex items-center justify-center"
@@ -2114,7 +2142,7 @@ const Conversation = () => {
                       File
                     </h2>
                     <div className="-mx-1 flex flex-wrap pb-3">
-                      {listFile.map((item, index) => {
+                      {listFile?.map((item, index) => {
                         const content = item.contents[0];
                         const keyParts = content.key.split("|");
                         if (keyParts.length >= 2) {
@@ -2150,7 +2178,7 @@ const Conversation = () => {
                       Link
                     </h2>
                     <div className="-mx-1 flex flex-wrap pb-3 pr-1">
-                      {listLink.map((item, index) => (
+                      {listLink?.map((item, index) => (
                         <div
                           className="flex w-full items-center  py-[10px] hover:bg-[#F1F3F4] "
                           key={index}

@@ -51,8 +51,8 @@ function AvatarNameItemMessage({
   // function countUnreadMessages(data) {
   //   let unreadCount = 0;
 
-  //   data.forEach((chat) => {
-  //     chat.chatActivity.forEach((message) => {
+  //   data?.forEach((chat) => {
+  //     chat.chatActivity?.forEach((message) => {
   //       if (message.userID !== "1" && message.status.read.length === 0) {
   //         unreadCount++;
   //       }
@@ -118,7 +118,7 @@ function AvatarNameItemMessage({
     const fetchConversation = async () => {
       try {
         const response = await fetch(
-          `${process.env.HOST}/api/v1/chat/get-search?chatID=${id}&messageID=${item.messageID}`,
+          `${process.env.REACT_APP_SERVER_HOST}/api/v1/chat/get-search?chatID=${id}&messageID=${item.messageID}`,
           {
             credentials: "include",
             headers: {
@@ -169,12 +169,12 @@ function AvatarNameItemMessage({
           id="content"
         >
           <div className="">
-            {unreadCount !== 0 ? (
+            {unreadCount != 0 ? (
               <>
                 <div className="grid gap-y-1">
                   <div>
                     <span className="text-sm font-semibold text-[#081C36]">
-                      {item.userID === localStorage.getItem("userID")
+                      {item.userID == localStorage.getItem("userID")
                         ? localStorage.getItem("userName")
                         : chatName}
                     </span>

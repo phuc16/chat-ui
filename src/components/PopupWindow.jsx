@@ -4,14 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function PopupWindow ({ isOpen, onClose, data, phoneNumber, token }) {
+export default function PopupWindow ({ isOpen, onClose, data, phoneNumber, token }) {
   const [loadAvt, setLoadAvt] = useState(data.avatar);
   const inputFileRef = useRef(null);
   const navigate = useNavigate();
-  const cloudinary = new Cloudinary({cloud: {cloudName: 'du73a0oen'}});
   if(!data){
     return null;
   }
+  const cloudinary = new Cloudinary({cloud: {cloudName: 'du73a0oen'}});
 
   console.log(data);
   console.log(phoneNumber);
@@ -37,7 +37,7 @@ function PopupWindow ({ isOpen, onClose, data, phoneNumber, token }) {
       .then(response=>response.json())
       .then(data=>newAvatar=data.secure_url);
 
-      console.log(newAvatar);
+      console.log("newAvatar", newAvatar);
       
 
       
@@ -45,7 +45,7 @@ function PopupWindow ({ isOpen, onClose, data, phoneNumber, token }) {
       const jsonAvt = {newAvatar: newAvatar}
 
       const res = await fetch(
-        `${process.env.HOST}/api/v1/account/change-avatar`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/change-avatar`,
         {
           method: "PUT",
           headers: {
@@ -151,5 +151,3 @@ function PopupWindow ({ isOpen, onClose, data, phoneNumber, token }) {
     </>
   );
 };
-
-export default PopupWindow;

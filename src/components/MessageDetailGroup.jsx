@@ -106,7 +106,7 @@ const MessageDetailGroup = ({
         </div>
       );
     } else if (contents && contents.length > 0) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
             <img
@@ -487,7 +487,7 @@ export default MessageDetailGroup;
 //     //   console.error("Contents is undefined");
 //     //   return null; // hoặc một giá trị mặc định khác tùy thuộc vào logic của bạn
 //     // }
-//     return contents.map((content, index) => {
+//     return contents?.map((content, index) => {
 //       if (content.key === "image") {
 //         return (
 //           <img

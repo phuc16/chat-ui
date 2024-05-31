@@ -107,12 +107,12 @@ const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
   const [conservationFriend, setConservationFriend] = useState([]);
 
   useEffect(() => {
-    const filteredConversations = conservation.filter(
+    const filteredConversations = conservation?.filter(
       (chat) => chat.chatName === data.userName,
     );
     console.log("filteredConversations", filteredConversations);
     setConservationFriend(filteredConversations);
-    if (filteredConversations.length > 0) {
+    if (filteredConversations?.length > 0) {
       setType(filteredConversations[0].type);
     }
   }, [data]);
@@ -168,7 +168,7 @@ const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
             ) : type === "FRIEND" ? (
               <div className="flex flex-1 items-center justify-center pt-[227px]">
                 <a
-                  href={`${process.env.SEFL_HOST}/app/chat?id=${conservationFriend[0].chatID}&type=individual-chat&chatName=${conservationFriend[0].chatName}&chatAvatar=${conservationFriend[0].chatAvatar}`}
+                  href={`${process.env.REACT_APP_SELF_HOST}/app/chat?id=${conservationFriend[0].chatID}&type=individual-chat&chatName=${conservationFriend[0].chatName}&chatAvatar=${conservationFriend[0].chatAvatar}`}
                   className="block w-full"
                 >
                   <button className="h-8 w-full rounded border bg-[#E5EFFF] text-base font-medium text-[#005ae0]">
@@ -385,11 +385,11 @@ export default function AddFriendDialog() {
   useEffect(() => {
     if (userID) {
       const newSocket = new WebSocket(
-        `${process.env.SOCKET_CHAT}/ws/user/${userID}`,
+        `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${userID}`,
       );
       newSocket.onopen = () => {
         console.warn(
-          `WebSocket '${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           userID,
           " OPENED",
         );
@@ -457,7 +457,7 @@ export default function AddFriendDialog() {
     }
 
     axios
-      .get(`${process.env.HOST}/api/v1/account/profile/${phoneNumber}`, {
+      .get(`${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/${phoneNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -500,12 +500,12 @@ export default function AddFriendDialog() {
 
     if (userFound) {
       const newSocket = new WebSocket(
-        `${process.env.SOCKET_CHAT}/ws/user/${receiverID}`,
+        `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${receiverID}`,
       );
 
       newSocket.onopen = () => {
         console.warn(
-          `WebSocket ${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket ${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           receiverID,
           " OPENED",
         );
@@ -522,7 +522,7 @@ export default function AddFriendDialog() {
 
       newSocket.onclose = () => {
         console.warn(
-          `WebSocket '${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           receiverID,
           " CLOSED",
         );
@@ -609,7 +609,7 @@ export default function AddFriendDialog() {
                       }}
                       inputProps={{ "aria-label": "Without label" }}
                     >
-                      {countries.map((country) => (
+                      {countries?.map((country) => (
                         <MenuItem key={country.code} value={country.code}>
                           <div className="flex  w-full">
                             <div className="flex-none">
@@ -652,7 +652,7 @@ export default function AddFriendDialog() {
                   Kết quả gần nhất
                 </span>
                 <ul>
-                  {recentSearches.map((data, index) => (
+                  {recentSearches?.map((data, index) => (
                     <AvatarNameItem key={index} data={data} type={"AF"} />
                   ))}
                 </ul>
@@ -673,7 +673,7 @@ export default function AddFriendDialog() {
                   </span>
                 </div>
                 <ul>
-                  {suggestedFriends.map((friend, index) => (
+                  {suggestedFriends?.map((friend, index) => (
                     <AvatarNameItem key={index} data={friend} type={"MS"} />
                   ))}
                 </ul>

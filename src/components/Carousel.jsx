@@ -57,7 +57,7 @@ export default function Carousel({ slides }) {
           transform: `translateX(-${current * 100}%)`,
         }}
       >
-        {slides.map((s, index) => (
+        {slides?.map((s, index) => (
           <div
             key={index}
             style={{ scrollSnapAlign: "start", minWidth: "100%" }}
@@ -97,7 +97,7 @@ export default function Carousel({ slides }) {
       </div>
 
       <div className="absolute bottom-0 left-0  flex w-full justify-center gap-3 py-4">
-        {slides.map((s, i) => (
+        {slides?.map((s, i) => (
           <div
             onClick={() => setCurrent(i)}
             key={"circle" + i}

@@ -45,13 +45,13 @@ export default function CreateGroup({ image }) {
 
   const storedData = JSON.parse(localStorage.getItem("conversations"));
   const conversations = storedData
-    ? storedData.filter((conversation) => conversation.type !== "GROUP")
+    ? storedData?.filter((conversation) => conversation.type !== "GROUP")
     : null;
 
   /* Fix lỗi hiển thị avatar khi load lại dữ liệu */
 
   useEffect(() => {
-    const newSocket = new WebSocket(`${process.env.SOCKET_CHAT}/ws/group`);
+    const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_CHAT}/ws/group`);
     newSocket.onopen = () => {
       // console.log("WebSocket connected");
     };
@@ -105,7 +105,7 @@ export default function CreateGroup({ image }) {
     socket.close();
     try {
       const response = await fetch(
-        `${process.env.HOST}/api/v1/user/info/${localStorage.getItem(
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/user/info/${localStorage.getItem(
           "userID",
         )}`,
         {
@@ -134,7 +134,7 @@ export default function CreateGroup({ image }) {
     const user = JSON.parse(localStorage.getItem("user"));
     const data = getSelectedItems();
     console.log(data);
-    const desiredFieldsArray = data.map((item) => ({
+    const desiredFieldsArray = data?.map((item) => ({
       userID: item.id_UserOrGroup,
       userName: item.chatName,
       userAvatar: item.chatAvatar,
@@ -181,14 +181,14 @@ export default function CreateGroup({ image }) {
   const handleOptionToggle = (optionId) => {
     const isSelected = selectedOptions.includes(optionId);
     if (isSelected) {
-      setSelectedOptions(selectedOptions.filter((id) => id !== optionId));
+      setSelectedOptions(selectedOptions?.filter((id) => id !== optionId));
     } else {
       setSelectedOptions([...selectedOptions, optionId]);
     }
   };
 
   const getSelectedItems = () => {
-    return conversations.filter((conversations) =>
+    return conversations?.filter((conversations) =>
       selectedOptions.includes(conversations.chatID),
     );
   };
@@ -300,7 +300,7 @@ export default function CreateGroup({ image }) {
 
               <ul>
                 {conversations
-                  ? conversations.map((conversation) => (
+                  ? conversations?.map((conversation) => (
                       <li
                         key={conversation.chatID}
                         className="flex items-center px-4 py-3"

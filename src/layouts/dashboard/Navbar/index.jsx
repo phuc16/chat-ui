@@ -41,7 +41,7 @@ function Navbar({ onNavbarReady }) {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `${process.env.HOST}/api/v1/account/profile/${cookies.get("phoneNumber")}`,
+            `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/${cookies.get("phoneNumber")}`,
             {
               method: "GET",
               headers: {
@@ -118,7 +118,7 @@ function Navbar({ onNavbarReady }) {
 
     // Đặt cookie userID với thời gian hết hạn và các tùy chọn bảo mật
     cookies.set("userID", userID, {
-      // expires: expirationDate,
+      expires: expirationDate,
       // Các tùy chọn bảo mật khác nếu cần
     });
   };
@@ -182,7 +182,7 @@ function Navbar({ onNavbarReady }) {
       const fetchProfile = async () => {
         try {
           const response = await fetch(
-            `${process.env.HOST}/api/v1/account/profile/${phoneNumber}`,
+            `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/${phoneNumber}`,
             {
               method: "GET",
               headers: {
@@ -197,7 +197,8 @@ function Navbar({ onNavbarReady }) {
 
           const data = await response.json();
           // console.log("data+++++++++++++++", data);
-          // console.log(data);
+          console.log(data);
+          console.log(data.avatar);
           setProfileData(data);
           setAvatar(data.avatar);
           localStorage.setItem("avatar", data.avatar);
@@ -428,7 +429,7 @@ function Navbar({ onNavbarReady }) {
                           const cookieNames = ["phoneNumber", "token", "userID"];
   
                           // Lặp qua danh sách cookieNames và gọi hàm cookies.remove cho mỗi tên cookie
-                          cookieNames.forEach((cookieName) => {
+                          cookieNames?.forEach((cookieName) => {
                             cookies.remove(cookieName, {
                               path: "/",
                               domain: "localhost",

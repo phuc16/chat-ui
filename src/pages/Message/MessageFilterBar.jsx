@@ -8,7 +8,6 @@ import { useLocation } from 'react-router-dom';
 import AddFriendDialog from "../../components/models/AddFriend";
 import CreateGroup from "../../components/models/CreateGroup";
 import { useUser } from "../../context/UserContext";
-import { getUserDataFromCookies } from "../../utils/cookies";
 
 const Message = lazy(() => import(".")); // Lazy load Message component
 const OtherMessage = lazy(() => import("./OtherMessage")); // Lazy load OtherMessage component
@@ -16,20 +15,19 @@ const OtherMessage = lazy(() => import("./OtherMessage")); // Lazy load OtherMes
 function MessageFilterBar() {
   const location = useLocation();
   const { state } = location;
-  const {user, setUser, cons, setCons, loadDefaultAvt, setLoadDefaultAvt } = useUser();
+  const {cons, setCons, loadDefaultAvt, setLoadDefaultAvt } = useUser();
   // Kiểm tra xem state có tồn tại không trước khi truy cập
   if (state) {
     const { token, phoneNumber, data } = state;
     // Bây giờ bạn có thể sử dụng token và phoneNumber ở đây
     // console.log(">>>>>>>TOKEN>>>>>>>>>>", token);
     // console.log(">>>>>>>PHONENUMBER>>>>>>>>", phoneNumber);
-    // console.log("data", data);
-    // console.log(user, setUser, cons, setCons, loadDefaultAvt, setLoadDefaultAvt)
+    console.log("data", data);
   }
 
   // const { data } = location.state;
   
-  console.log(user)
+
 
   // console.log(">>>>STATE>>>>>>>>>",state);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,18 +40,7 @@ function MessageFilterBar() {
   };
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const user = await getUserDataFromCookies()
-      console.log(user);
-      if (user === null) {
-        console.error("User is not logged in")
-      } else {
-        setUser(user);
-      }
-    }
-    if (user === null) {
-      fetchProfile();
-    }
+    // Set default component when the component mounts
     setComponent(() => Message);
   }, []);
 

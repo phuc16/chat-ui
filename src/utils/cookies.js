@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import jwtDecode from 'jwt-decode';
+import { getTokenFromCookies } from './auth';
 
+// Import thư viện mã hóa AES
 import CryptoJS from 'crypto-js';
 
-const secretKey = 'secret';
+// Khóa bí mật để mã hóa/ giải mã dữ liệu
+const secretKey = 'tranquanghuydangcodeappzaloxinchaotatcacacban09@#$%^&*()_+';
 
+// Hàm để mã hóa dữ liệu trước khi lưu vào cookies
 export const encryptData = (data) => {
     const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
     return encryptedData;
 };
 
+// Hàm để giải mã dữ liệu từ cookies
 export const decryptData = (encryptedData) => {
     try {
         const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
         const decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
 
+        // Kiểm tra xem dữ liệu có đúng định dạng JSON không
         if (!decryptedData || decryptedData.trim() === '') {
             throw new Error('Invalid JSON data');
         }
 
+        // Parse dữ liệu JSON
         const parsedData = JSON.parse(decryptedData);
         return parsedData;
     } catch (error) {
@@ -29,8 +33,10 @@ export const decryptData = (encryptedData) => {
 };
 
 
+
+
 export const getUserDataFromCookies = async () => {
-    const token = localStorage.getItem("token");
+    const token = getTokenFromCookies();
     
     if (token) {
         try {
@@ -56,7 +62,7 @@ export const getUserDataFromCookies = async () => {
                 return data
             } else {
                 console.error("API call failed");
-                return data
+                return null
             }
         }   
         catch (error) {

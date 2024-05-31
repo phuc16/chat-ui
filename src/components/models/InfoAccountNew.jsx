@@ -73,7 +73,7 @@ const AddFriendDialog2 = ({
   const [conservationFriend, setConservationFriend] = useState([]);
 
   useEffect(() => {
-    const filteredConversations = conservation.filter(
+    const filteredConversations = conservation?.filter(
       (chat) => chat.chatName === data.userName,
     );
     console.log("filteredConversations", filteredConversations);
@@ -101,12 +101,12 @@ const AddFriendDialog2 = ({
 
     if (data) {
       const newSocket = new WebSocket(
-        `${process.env.SOCKET_CHAT}/ws/user/${receiverID}`,
+        `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${receiverID}`,
       );
 
       newSocket.onopen = () => {
         console.warn(
-          `WebSocket ${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket ${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           receiverID,
           " OPENED",
         );
@@ -123,7 +123,7 @@ const AddFriendDialog2 = ({
 
       newSocket.onclose = () => {
         console.warn(
-          `WebSocket '${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           receiverID,
           " CLOSED",
         );
@@ -138,7 +138,7 @@ const AddFriendDialog2 = ({
     // setType("UN");
 
     // Tìm và cập nhật phần tử trong mảng
-    const updatedConversations = conservation.map((conversation) => {
+    const updatedConversations = conservation?.map((conversation) => {
       if (conversation.chatName === data.userName) {
         // Cập nhật lại thuộc tính type thành 'friend'
         return { ...conversation, type: "STRANGER" };
@@ -209,7 +209,7 @@ const AddFriendDialog2 = ({
                 <a
                   className="block w-1/2"
                   href={`${
-                    process.env.SEFL_HOST
+                    process.env.REACT_APP_SELF_HOST
                   }/app/chat?id=${sessionStorage.getItem(
                     "chatID",
                   )}&type=individual-chat&chatName=${chatName}&chatAvatar=${chatAvatar}`}
@@ -442,11 +442,11 @@ export default function InforAccountdDialog({
   useEffect(() => {
     if (userID) {
       const newSocket = new WebSocket(
-        `${process.env.SOCKET_CHAT}/ws/user/${userID}`,
+        `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${userID}`,
       );
       newSocket.onopen = () => {
         console.warn(
-          `WebSocket '${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           userID,
           " OPENED",
         );
@@ -478,7 +478,7 @@ export default function InforAccountdDialog({
             );
 
             // Tìm và cập nhật phần tử trong mảng
-            const updatedConversations = conversations.map((conversation) => {
+            const updatedConversations = conversations?.map((conversation) => {
               if (conversation.id_UserOrGroup === jsonData.senderID) {
                 // Cập nhật lại thuộc tính type thành 'friend'
                 return { ...conversation, type: "FRIEND" };
@@ -561,7 +561,7 @@ export default function InforAccountdDialog({
 
     axios
       .get(
-        `${process.env.HOST}/api/v1/account/profile/userID/${id_UserOrGroup}`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/userID/${id_UserOrGroup}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -638,12 +638,12 @@ export default function InforAccountdDialog({
 
     if (userFound) {
       const newSocket = new WebSocket(
-        `${process.env.SOCKET_CHAT}/ws/user/${receiverID}`,
+        `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${receiverID}`,
       );
 
       newSocket.onopen = () => {
         console.warn(
-          `WebSocket ${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket ${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           receiverID,
           " OPENED",
         );
@@ -660,7 +660,7 @@ export default function InforAccountdDialog({
 
       newSocket.onclose = () => {
         console.warn(
-          `WebSocket '${process.env.SOCKET_CHAT}/ws/user/' for UserID: `,
+          `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
           receiverID,
           " CLOSED",
         );

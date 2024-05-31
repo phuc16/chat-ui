@@ -36,10 +36,10 @@ export default function InfoAccount({ isOpen, onClose, data, phoneNumber, token 
 
         console.log(newAvatar);
 
-        const jsonAvt = { newAvatar: newAvatar };
+        const jsonAvt = { field: newAvatar };
 
         const res = await fetch(
-          `${process.env.HOST}/api/v1/account/change-avatar`,
+          `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/change-avatar`,
           {
             method: "PUT",
             headers: {

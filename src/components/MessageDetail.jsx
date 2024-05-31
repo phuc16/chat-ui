@@ -125,7 +125,7 @@ const MessageDetail = ({
         </div>
       );
     } else if (contents && contents.length == 1) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
             <div key={index}>
@@ -188,7 +188,7 @@ const MessageDetail = ({
         // return null;
       });
     } else if (contents && contents.length == 2) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
             <div key={index}>
@@ -209,7 +209,7 @@ const MessageDetail = ({
         }
       });
     } else if (contents && contents.length > 1) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
             <div key={index}>
@@ -253,7 +253,7 @@ const MessageDetail = ({
 
   const renderImageInForwadMsg = (contents) => {
     if (contents && contents.length > 0) {
-      return contents.map((content, index) => {
+      return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
             <img
@@ -277,9 +277,10 @@ const MessageDetail = ({
     } else {
       // console.log("message.parentID", message.parentID);
       if (message.parentID != null) {
+        console.log(message)
         const fetchInfoAccount = async () => {
           const response = await fetch(
-            `${process.env.HOST}/api/v1/account/profile/userID/${message.parentID.userID}`,
+            `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/userID/${message.parentID.userID}`,
             {
               method: "GET",
               headers: {

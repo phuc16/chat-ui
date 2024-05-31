@@ -350,7 +350,7 @@ const ConversationGroup = () => {
   const [consGroup, setConsGroup] = useState(JSON.parse(localStorage.getItem("conversations")).find(item => item.chatID === id) );
   // const [group, setGroup] = useState(null);
   const storedData  = JSON.parse(localStorage.getItem("conversations"));
-  const conversations = storedData ? storedData.filter(conversation => conversation.type !== "GROUP") : null
+  const conversations = storedData ? storedData?.filter(conversation => conversation.type !== "GROUP") : null
 
   const [messageRecalledID, setMessageRecalledID] = useState(null);
   const [messageDeletedID, setMessageDeletedID] = useState(null);
@@ -371,14 +371,14 @@ const ConversationGroup = () => {
   const handleOptionToggle = (optionId) => {
     const isSelected = selectedOptions.includes(optionId);
     if (isSelected) {
-      setSelectedOptions(selectedOptions.filter((id) => id !== optionId));
+      setSelectedOptions(selectedOptions?.filter((id) => id !== optionId));
     } else {
       setSelectedOptions([...selectedOptions, optionId]);
     }
   };
 
   const getSelectedItems = () => {
-    return conversations.filter((conversations) => selectedOptions.includes(conversations.chatID));
+    return conversations?.filter((conversations) => selectedOptions.includes(conversations.chatID));
   };
 
   const handleFocusNameGroup = () => {
@@ -434,7 +434,7 @@ const ConversationGroup = () => {
   const fetchMessages = async (id, x, y, token) => {
     try {
       const response = await axios.get(
-        `${process.env.HOST}/api/v1/chat/x-to-y?id=${id}&x=${x}&y=${y}`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/chat/x-to-y?id=${id}&x=${x}&y=${y}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -468,7 +468,7 @@ const ConversationGroup = () => {
   const fetchGroup = async() => {
     try {
       const response = await axios.get(
-        `${process.env.HOST}/api/v1/group/info?groupID=${id}`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/group/info?idGroup=${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -513,12 +513,12 @@ const ConversationGroup = () => {
       );
       setMessages(fetchedMessages);
     };
-    const newSocket = new WebSocket(`${process.env.SOCKET_CHAT}/ws/chat/${id}`);
+    const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_CHAT}/ws/chat/${id}`);
     newSocket.onopen = async () => {
       console.log("WebSocket connected >>>>>>>>Group");
     };
 
-    const newSocketGroup = new WebSocket(`${process.env.SOCKET_CHAT}/ws/group`);
+    const newSocketGroup = new WebSocket(`${process.env.REACT_APP_SOCKET_CHAT}/ws/group`);
     newSocketGroup.onopen = async () => {
       console.log("WebSocket connected");
     };
@@ -771,7 +771,7 @@ const ConversationGroup = () => {
             if (jsonData.tcm === "TCM05") {
               console.log("Runnnnnn");
               const messageIDToRecall = jsonData.messageID;
-              const updatedMessages = messages.map((msg) => {
+              const updatedMessages = messages?.map((msg) => {
                 if (
                   msg.messageID === messageIDToRecall ||
                   msg.id === messageIDToRecall
@@ -796,7 +796,7 @@ const ConversationGroup = () => {
             ) {
               const messageIDToDelete = messageDeletedID;
               // Lọc ra các tin nhắn mà không có messageIDToDelete
-              const updatedMessages = messages.filter(
+              const updatedMessages = messages?.filter(
                 (msg) => msg.messageID !== messageIDToDelete,
               );
               setMessages(updatedMessages);
@@ -895,7 +895,7 @@ const ConversationGroup = () => {
   const handleAddMemberToGroup = () => {
     let mem = getSelectedItems();
     // console.log(mem);
-    mem.map(item=> {
+    mem?.map(item=> {
       if (socketGroup && socket) {
         let addMem = {
           id: uuidv4(),
@@ -1024,7 +1024,7 @@ const ConversationGroup = () => {
   const reloadCons = async () => {
     try {
       const response = await fetch(
-        `${process.env.HOST}/api/v1/user/info/${localStorage.getItem("userID")}`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/user/info/${localStorage.getItem("userID")}`,
         {
           credentials: "include",
           headers: {
@@ -1171,7 +1171,7 @@ const ConversationGroup = () => {
           {/* <Message sender="other" content="Xin chào!" timestamp="15:30" />
           <Message sender="me" content="Chào bạn!" timestamp="15:32" />
           Thêm tin nhắn khác ở đây */}
-          {messages.map((message, index) => (
+          {messages?.map((message, index) => (
             <MessageDetailGroup
               key={index}
               message={message}
@@ -1398,7 +1398,7 @@ const ConversationGroup = () => {
                       <h6 className="p-2 text-sm font-semibold">Danh sách bạn bè</h6>
 
                       <ul>
-                        {conversations?conversations.map((conversation) => {
+                        {conversations?conversations?.map((conversation) => {
                           // console.log("lò"+group.members);
                           if (!((group.owner.userID === conversation.id_UserOrGroup)
                           || (group.admin.some(item => item["userID"] === conversation.id_UserOrGroup)) || (group.members.some(item => item["userID"] === conversation.id_UserOrGroup)))) {
@@ -1465,7 +1465,7 @@ const ConversationGroup = () => {
                       <img src={group.admin.userAvatar} alt={group.admin.userName} className="h-8 w-8 rounded-full mr-2" />
                       <span>{group.admin.userName}   (Phó nhóm)</span>
                     </li>} */}
-                  { group.admin.map((admin) => (
+                  { group.admin?.map((admin) => (
                     <li
                     key={admin.userID}
                     className="flex items-center px-4 py-3"
@@ -1483,7 +1483,7 @@ const ConversationGroup = () => {
                   ))}
 
 
-                  {group.members.map((member) => (
+                  {group.members?.map((member) => (
                     <li
                       key={member.userID}
                       className="flex items-center px-4 py-3"

@@ -11,6 +11,8 @@ import {
 import axios from "axios";
 import Cookies from "universal-cookie";
 
+import IconImage from "../assets/icons/image.png";
+
 import notificationSound from "../assets/sounds/message-notification.mp3";
 function ChatElement({
   id,
@@ -55,11 +57,11 @@ function ChatElement({
   useEffect(() => {
     if (id) {
       const newSocket = new WebSocket(
-        `${process.env.SOCKET_CHAT}/ws/chat/${id}`,
+        `${process.env.REACT_APP_SOCKET_CHAT}/ws/chat/${id}`,
       );
       newSocket.onopen = () => {
         console.warn(
-          `WebSocket in CHAT ELEMENT: '${process.env.SOCKET_CHAT}/ws/chat/' for chatID: `,
+          `WebSocket in CHAT ELEMENT: '${process.env.REACT_APP_SOCKET_CHAT}/ws/chat/' for chatID: `,
           id,
           " OPENED",
           newSocket.readyState,
@@ -125,7 +127,7 @@ function ChatElement({
           // if (jsonData.tcm === "TCM04") {
           //   const messageIDToDelete = jsonData.messageID;
           //   // Lọc ra các tin nhắn mà không có messageIDToDelete
-          //   const updatedMessages = conversationsIndex.filter(
+          //   const updatedMessages = conversationsIndex?.filter(
           //     (msg) => msg.messageID !== messageIDToDelete,
           //   );
           //   setConversationsIndex(updatedMessages);
@@ -156,49 +158,51 @@ function ChatElement({
         timestamp,
       );
       // console.log(`>>>>>${chatName}>>>>>>>>`, fetchedMessages);
-      setTopChat(fetchedMessages[fetchedMessages.length - 1]);
-      const topChat2 = fetchedMessages[fetchedMessages.length - 1];
-      const topChatToShow = () => {
-        const contents = topChat2.contents;
-        const lastContent = contents[contents.length - 1];
-        if (lastContent.key === "text") {
-          return lastContent.value;
-        } else if (lastContent.key === "image") {
-          return (
-            <span className="flex items-center">
-              <img
-                src="/src/assets/icons/image.png"
-                alt=""
-                className="h-[14px] w-[14px]"
-              />
-              &nbsp;Hình ảnh
-            </span>
-          );
-        } else if (
-          lastContent.key.startsWith("zip") ||
-          lastContent.key.startsWith("pdf") ||
-          lastContent.key.startsWith("xlsx") ||
-          lastContent.key.startsWith("doc") ||
-          lastContent.key.startsWith("docx") ||
-          lastContent.key.startsWith("rar")
-        ) {
-          return (
-            <span className="flex items-center">
-              <img
-                src="/src/assets/icons/file-default.png"
-                alt=""
-                className="h-[14px] w-[14px]"
-              />
-              &nbsp;File
-            </span>
-          );
-        } else if (lastContent.key === "emoji") {
-          return lastContent.value;
-        } else {
-          return "Tin nhắn mới";
-        }
-      };
-      if (topChat2) setTopChatToShow(topChatToShow());
+      if (fetchedMessages) {
+        setTopChat(fetchedMessages[fetchedMessages.length - 1]);
+        const topChat2 = fetchedMessages[fetchedMessages.length - 1];
+        const topChatToShow = () => {
+          const contents = topChat2.contents;
+          const lastContent = contents[contents.length - 1];
+          if (lastContent.key === "text") {
+            return lastContent.value;
+          } else if (lastContent.key === "image") {
+            return (
+              <span className="flex items-center">
+                <img
+                  src={IconImage}
+                  alt=""
+                  className="h-[14px] w-[14px]"
+                />
+                &nbsp;Hình ảnh
+              </span>
+            );
+          } else if (
+            lastContent.key.startsWith("zip") ||
+            lastContent.key.startsWith("pdf") ||
+            lastContent.key.startsWith("xlsx") ||
+            lastContent.key.startsWith("doc") ||
+            lastContent.key.startsWith("docx") ||
+            lastContent.key.startsWith("rar")
+          ) {
+            return (
+              <span className="flex items-center">
+                <img
+                  src="/src/assets/icons/file-default.png"
+                  alt=""
+                  className="h-[14px] w-[14px]"
+                />
+                &nbsp;File
+              </span>
+            );
+          } else if (lastContent.key === "emoji") {
+            return lastContent.value;
+          } else {
+            return "Tin nhắn mới";
+          }
+        };
+        if (topChat2) setTopChatToShow(topChatToShow());
+      }
     };
     if (id && tokenFromCookies) fetchData();
   }, [id, tokenFromCookies]);
@@ -224,8 +228,8 @@ function ChatElement({
   // function countUnreadMessages(data) {
   //   let unreadCount = 0;
 
-  //   data.forEach((chat) => {
-  //     chat.chatActivity.forEach((message) => {
+  //   data?.forEach((chat) => {
+  //     chat.chatActivity?.forEach((message) => {
   //       if (message.userID !== "1" && message.status.read.length === 0) {
   //         unreadCount++;
   //       }
@@ -300,14 +304,14 @@ function ChatElement({
     // console.table({ id, x, y, token });
     try {
       const response = await axios.get(
-        `${process.env.HOST}/api/v1/chat/x-to-y?id=${id}&x=${x}&y=${y}&timestamp=${timestamp}`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/chat/x-to-y?id=${id}&x=${x}&y=${y}&timestamp=${timestamp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
       );
-      // console.log("Data:", response.data);
+      // console.log("Data:", response);
       return response.data;
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -326,18 +330,157 @@ function ChatElement({
   useEffect(() => {
     setReadByOnClick(false);
   }, [id]);
+  console.log(topChatActivity)
   return (
     <div
       onClick={() => {
         handOnClick();
       }}
-      className={`${
-        readByOnClick && id === sessionStorage.getItem("chatID")
+      className={`${readByOnClick && id === sessionStorage.getItem("chatID")
           ? "bg-[#E1EDFE]"
           : ""
-      }  z-50 pl-4 pr-1`}
+        }  z-50 pl-4 pr-1`}
     >
-      
+      {topChatActivity?.length >= 0 ? (
+        <div
+          className={`flex h-[74px] w-full items-center pr-2 ${
+            // countTopChatActivity <= 10 ? "pr-1" : ""
+            "pr-1"
+            }`}
+        >
+          {/* <img
+            src={chatAvatar}
+            alt="avatar"
+            className="aspect-w-1 aspect-h-1 h-12 w-12 rounded-full object-cover"
+          /> */}
+          <Avatar
+            // alt="avatar"
+            src={chatAvatar}
+            sx={{ width: 48, height: 48 }}
+          />
+          <div
+            className="flex grow justify-between pl-3 md:w-[342px]"
+            id="content"
+          >
+            <div className="">
+              {newMessage ? (
+                newMessage.includes("t!@#%&*()_+") ? (
+                  <div className="grid gap-y-1">
+                    <div>
+                      <span className="text-base font-semibold text-[#081C36]">
+                        {chatName}
+                      </span>
+                    </div>
+                    <div className="transition-min-width flex min-w-[calc(100vw-200px)] items-center text-sm font-medium text-[#7589A3] duration-200  md:min-w-full">
+                      <span className="overflow-hidden truncate overflow-ellipsis whitespace-nowrap md:w-[175px]">
+                        {/* {messageContent}
+                        {newMessage} */}
+                        {newMessage.includes("Hình ảnh") && (
+                          <>
+                            <span className="flex items-center">
+                              Bạn:&nbsp;
+                              <img
+                                src="/src/assets/icons/image.png"
+                                alt=""
+                                className="h-[14px] w-[14px]"
+                              />
+                              &nbsp;Hình ảnh
+                            </span>
+                          </>
+                        )}
+                        {newMessage.includes("File") && (
+                          <>
+                            <span className="flex items-center">
+                              Bạn:&nbsp;
+                              <img
+                                src="/src/assets/icons/file-default.png"
+                                alt=""
+                                className="h-[14px] w-[14px]"
+                              />
+                              &nbsp;File
+                            </span>
+                          </>
+                        )}
+                        {!newMessage.includes("Hình ảnh") &&
+                          !newMessage.includes("File") &&
+                          newMessage.replace("t!@#%&*()_+", "")}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid gap-y-1">
+                    <div>
+                      <span className="text-base font-semibold text-[#081C36]">
+                        {chatName}
+                      </span>
+                    </div>
+                    <div className="transition-min-width flex min-w-[calc(100vw-200px)] items-center text-sm font-medium text-[#081C36] duration-200  md:min-w-full">
+                      <span className="overflow-hidden truncate overflow-ellipsis whitespace-nowrap md:w-[175px]">
+                        {/* {messageContent} */}
+                        {newMessage}
+                      </span>
+                    </div>
+                  </div>
+                )
+              ) : topChat && topChat.userID === userIDFromCookies ? (
+                <>
+                  <div className="grid gap-y-1">
+                    <div>
+                      <span className="text-base font-semibold text-[#081C36]">
+                        {chatName}
+                      </span>
+                    </div>
+                    <div className="transition-min-width flex min-w-[calc(100vw-200px)] items-center text-sm font-medium text-[#7589A3] duration-200 md:w-[175px] md:min-w-full">
+                      <span>Bạn:&nbsp;</span>
+                      <span className="overflow-hidden truncate overflow-ellipsis whitespace-nowrap md:w-[175px]">
+                        {topChatToShow}
+                        {/* {messageContentInTopChatActivity} */}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid gap-y-1">
+                    <div>
+                      <span className="text-base font-semibold text-[#081C36]">
+                        {chatName}
+                      </span>
+                    </div>
+                    <div
+                      className={`transition-min-width flex min-w-[calc(100vw-200px)] items-center text-sm ${readByOnClick
+                          ? "font-medium text-[#7589A3]"
+                          : "font-bold text-[#081C36] "
+                        }  duration-200  md:min-w-full`}
+                    >
+                      <span className="overflow-hidden truncate overflow-ellipsis whitespace-nowrap md:w-[175px]">
+                        {topChatToShow}
+                        {/* {messageContentInTopChatActivity} */}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="mt-[-4px] grid gap-y-1 ">
+              <div>
+                <span className="truncate text-xs">{timeDifference}</span>
+              </div>
+              {unreadCount != 0 ? (
+                <>
+                  <div className="flex h-4 w-4 flex-grow items-center justify-center place-self-end rounded-full bg-[#C81A1F] text-white">
+                    <span className="text-xs">{unreadCount}</span>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

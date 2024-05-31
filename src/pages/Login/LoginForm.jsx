@@ -126,6 +126,7 @@ export default function LoginForm() {
               <FontAwesomeIcon icon={faLock} className="mx-3" />
               <input
                 id="input-password"
+                type="password"
                 placeholder="Mật khẩu"
                 className="mx-3 w-64 px-3 focus:outline-none"
                 onChange={(event) => {

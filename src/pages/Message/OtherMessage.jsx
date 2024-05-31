@@ -25,7 +25,7 @@ function OtherMessage() {
       <div className="flex w-full items-center pr-2">
         <div className="h-[calc(100vh-95px)] w-full overflow-auto">
           {otherMessage &&
-            otherMessage.map((conversation) => (
+            otherMessage?.map((conversation) => (
               <div className="flex h-[74px] w-full items-center pl-4">
                 <Avatar
                   src={conversation.chatAvatar}

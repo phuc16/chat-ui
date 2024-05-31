@@ -6,7 +6,7 @@ import Todo from "../Todo";
 
 const MainHome = () => (
       // <Routes>
-      //   {publicMainHomeRoutes.map((route, index) => {
+      //   {publicMainHomeRoutes?.map((route, index) => {
       //     // const Layout = route.layout || DefaultLayout;
       //     const Page = route.component;
       //     return (

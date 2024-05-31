@@ -155,6 +155,7 @@ return (
                 <FontAwesomeIcon icon={faLock} className="mx-3" />
                 <input
                     id="input-password"
+                    type="password"
                     placeholder="Gồm 2-40 kí tự"
                     className="mx-3 px-3 focus:outline-none"
                     onChange={(event) => {
@@ -167,6 +168,7 @@ return (
                 <FontAwesomeIcon icon={faLock} className="mx-3" />
                 <input
                     id="input-password"
+                    type="password"
                     placeholder="Nhập lại mật khẩu"
                     className="mx-3 px-3 focus:outline-none"
                     onChange={(event) => {
