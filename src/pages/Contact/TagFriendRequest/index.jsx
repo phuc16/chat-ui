@@ -3,6 +3,7 @@ import axios from "axios";
 import Button from "@mui/material/Button";
 import { message, Space } from "antd";
 import { v4 as uuidv4 } from "uuid";
+import Cookies from "universal-cookie"
 function TagFriendRequest() {
   const tokenFromCookies = localStorage.getItem("token");
   const userID = localStorage.getItem("userID");
@@ -40,7 +41,6 @@ function TagFriendRequest() {
           );
           console.log("senderName", jsonData.senderName);
           console.log("tum>>>>>>>>>", jsonData.tum);
-          // Xử lý dữ liệu được gửi đến ở đây
           if (jsonData.tum === "TUM02") {
             setFriendRequest(
               friendRequest?.filter((f) => f.userID !== jsonData.senderID),
@@ -59,7 +59,6 @@ function TagFriendRequest() {
           }
         } else {
           // console.error("Received data is not valid JSON:", data);
-          // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
         }
       };
 
@@ -80,7 +79,23 @@ function TagFriendRequest() {
             },
           },
         );
-        setFriendRequests(response.data.friendRequests); // Cập nhật state với dữ liệu từ API
+        if (response.status === 401) {
+          const cookies = new Cookies();
+          const allCookies = cookies.getAll();
+          for (const cookieName in allCookies) {
+            if (allCookies.hasOwnProperty(cookieName)) {
+              cookies.remove(cookieName, {
+                path: "/",
+              });
+              cookies.remove(cookieName, {
+                path: "/auth",
+              });
+            }
+          }
+          localStorage.clear();
+          throw new Error("Unauthorized");
+        }
+        setFriendRequests(response.data.friendRequests);
         setFriendRequest(
           response.data.friendRequests?.filter(
             (friendRequest) => !friendRequest.isSender,
@@ -91,30 +106,22 @@ function TagFriendRequest() {
             (friendRequest) => friendRequest.isSender,
           ),
         );
-        //   localStorage.setItem(
-        //     "conversations",
-        //     JSON.stringify(response.data.friendRequests),
-        //   );
       } catch (error) {
         console.error("Error fetching friendRequests:", error);
       }
     };
 
-    // Chỉ fetch nếu userID và token đã được thiết lập
     if (userID && tokenFromCookies) {
       fetchConversations();
     }
   }, [userID, tokenFromCookies]);
 
-  // Hàm để chuyển đổi chuỗi ngày tháng sang định dạng "dd/mm"
   function formatDate(dateString) {
     const date = new Date(dateString);
-    const day = date.getDate(); // Lấy ngày
-    const month = date.getMonth() + 1; // Lấy tháng (lưu ý: tháng bắt đầu từ 0)
-    // Đảm bảo định dạng 'dd/mm' cho ngày và tháng
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
     const formattedDay = day < 10 ? "0" + day : day;
     const formattedMonth = month < 10 ? "0" + month : month;
-    // Trả về chuỗi ngày tháng đã được định dạng
     return formattedDay + "/" + formattedMonth;
   }
 
@@ -144,14 +151,14 @@ function TagFriendRequest() {
         receiverID,
         " OPENED",
       );
-      // Gửi tin nhắn khi kết nối thành công
+     
       newSocket.send(JSON.stringify(message));
       console.log("Message sent:", message);
     };
 
     newSocket.onmessage = (event) => {
       console.log("Message received:", event.data);
-      // Xử lý dữ liệu được gửi đến ở đây
+      
     };
 
     newSocket.onclose = () => {
@@ -182,14 +189,14 @@ function TagFriendRequest() {
         receiverID,
         " OPENED",
       );
-      // Gửi tin nhắn khi kết nối thành công
+     
       newSocket.send(JSON.stringify(message));
       console.log("Message sent:", message);
     };
 
     newSocket.onmessage = (event) => {
       console.log("Message received:", event.data);
-      // Xử lý dữ liệu được gửi đến ở đây
+      
     };
 
     newSocket.onclose = () => {

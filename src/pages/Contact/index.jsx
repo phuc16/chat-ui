@@ -21,9 +21,9 @@ function Contact() {
     setSelectedIndex(index);
     if (index ==0 ) {
       navigate("/contact/listFriend")
-    } else if (index == 1 ) {
+    } else if (index === 1 ) {
       navigate("/contact/listGroup")
-    } else if (index == 2 ) {
+    } else if (index === 2 ) {
       navigate("/contact/listFriendRequest")
     }
   };

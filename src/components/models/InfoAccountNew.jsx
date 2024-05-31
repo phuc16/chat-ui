@@ -67,17 +67,17 @@ const AddFriendDialog2 = ({
 }) => {
   console.log("data", data);
   const dateTime = new Date(data.birthday);
-  const conservation = JSON.parse(localStorage.getItem("conversations"));
-  console.log("conservation", conservation);
+  const conversation = JSON.parse(localStorage.getItem("conversations"));
+  console.log("conversation", conversation);
   const [type, setType] = useState("");
-  const [conservationFriend, setConservationFriend] = useState([]);
+  const [conversationFriend, setConversationFriend] = useState([]);
 
   useEffect(() => {
-    const filteredConversations = conservation?.filter(
+    const filteredConversations = conversation?.filter(
       (chat) => chat.chatName === data.userName,
     );
     console.log("filteredConversations", filteredConversations);
-    setConservationFriend(filteredConversations);
+    setConversationFriend(filteredConversations);
     if (filteredConversations.length > 0) {
       setType(filteredConversations[0].type);
     }
@@ -111,14 +111,14 @@ const AddFriendDialog2 = ({
           " OPENED",
         );
 
-        // Gửi tin nhắn khi kết nối thành công
+
         newSocket.send(JSON.stringify(message));
         console.log("Message sent:", message);
       };
 
       newSocket.onmessage = (event) => {
         console.log("Message received:", event.data);
-        // Xử lý dữ liệu được gửi đến ở đây
+
       };
 
       newSocket.onclose = () => {
@@ -138,7 +138,7 @@ const AddFriendDialog2 = ({
     // setType("UN");
 
     // Tìm và cập nhật phần tử trong mảng
-    const updatedConversations = conservation?.map((conversation) => {
+    const updatedConversations = conversation?.map((conversation) => {
       if (conversation.chatName === data.userName) {
         // Cập nhật lại thuộc tính type thành 'friend'
         return { ...conversation, type: "STRANGER" };
@@ -208,11 +208,10 @@ const AddFriendDialog2 = ({
                 </button>
                 <a
                   className="block w-1/2"
-                  href={`${
-                    process.env.REACT_APP_SELF_HOST
-                  }/app/chat?id=${sessionStorage.getItem(
-                    "chatID",
-                  )}&type=individual-chat&chatName=${chatName}&chatAvatar=${chatAvatar}`}
+                  href={`${process.env.REACT_APP_SELF_HOST
+                    }/app/chat?id=${sessionStorage.getItem(
+                      "chatID",
+                    )}&type=individual-chat&chatName=${chatName}&chatAvatar=${chatAvatar}`}
                 >
                   <button className="h-8 w-full rounded border bg-[#E5EFFF] text-base font-medium text-[#005ae0]">
                     Nhắn tin
@@ -416,12 +415,10 @@ export default function InforAccountdDialog({
     // Lấy userID từ cookies
     const userIDFromCookie = Cookies.get("userID");
 
-    // Nếu có userID từ cookies, giải mã và trả về
     if (userIDFromCookie) {
       return userIDFromCookie;
     }
 
-    // Nếu không có userID từ cookies, trả về null
     return null;
   };
 
@@ -467,7 +464,7 @@ export default function InforAccountdDialog({
           console.log("Message received:", jsonData);
           console.log("senderName", jsonData.senderName);
           console.log("tum>>>>>>>>>", jsonData.tum);
-          // Xử lý dữ liệu được gửi đến ở đây
+
           if (jsonData && jsonData.tum === "TUM03") {
             const content = `${jsonData.senderName} đã chấp nhận lời mời kết bạn!`;
             console.log("content", content);
@@ -501,7 +498,6 @@ export default function InforAccountdDialog({
           }
         } else {
           // console.error("Received data is not valid JSON:", data);
-          // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
         }
       };
       setSocket(newSocket);
@@ -532,11 +528,6 @@ export default function InforAccountdDialog({
     );
     setFriendsList((prevList) => [...prevList, { prefix, phoneNumber }]);
     handleClose();
-  };
-
-  const handleAddSuggestedFriend = (friend) => {
-    console.log(`Add suggested friend: ${friend.name}`);
-    // Thực hiện xử lý thêm bạn bè từ danh sách người có thể quen biết ở đây
   };
 
   const handleSelectCountry = (e) => {
@@ -579,8 +570,22 @@ export default function InforAccountdDialog({
         }
       })
       .catch((error) => {
-        // Bắt lỗi 404
-        if (error.response && error.response.status === 404) {
+        if (error.response && error.response.status === 401) {
+          const cookies = new Cookies()
+          const allCookies = cookies.getAll();
+          for (const cookieName in allCookies) {
+            if (allCookies.hasOwnProperty(cookieName)) {
+              cookies.remove(cookieName, {
+                path: "/",
+              });
+              cookies.remove(cookieName, {
+                path: "/auth",
+              });
+            }
+          }
+          localStorage.clear();
+          throw new Error("Unauthorized");
+        } else if (error.response && error.response.status === 404) {
           console.error("User not found with the provided phone number.");
         } else {
           console.error("Error searching user by phone number:", error);
@@ -593,8 +598,8 @@ export default function InforAccountdDialog({
   }, []);
 
   useEffect(() => {
-    const conservations = JSON.parse(localStorage.getItem("conversations"));
-    const conversation = conservations.find(
+    const conversations = JSON.parse(localStorage.getItem("conversations"));
+    const conversation = conversations.find(
       (item) => item.chatID === chatIDToFind,
     );
     var id_UserOrGroup = null;
@@ -608,8 +613,8 @@ export default function InforAccountdDialog({
   }, [chatIDToFind, forceRender]);
 
   //   useEffect(() => {
-  //     const conservations = JSON.parse(localStorage.getItem("conversations"));
-  //     const conversation = conservations.find(
+  //     const conversations = JSON.parse(localStorage.getItem("conversations"));
+  //     const conversation = conversations.find(
   //       (item) => item.chatID === chatIDToFind,
   //     );
   //     var id_UserOrGroup = null;
@@ -648,14 +653,14 @@ export default function InforAccountdDialog({
           " OPENED",
         );
 
-        // Gửi tin nhắn khi kết nối thành công
+
         newSocket.send(JSON.stringify(message));
         console.log("Message sent:", message);
       };
 
       newSocket.onmessage = (event) => {
         console.log("Message received:", event.data);
-        // Xử lý dữ liệu được gửi đến ở đây
+
       };
 
       newSocket.onclose = () => {

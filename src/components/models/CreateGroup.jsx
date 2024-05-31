@@ -18,6 +18,7 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import Cookies from "universal-cookie"
 
 export default function CreateGroup({ image }) {
   const navigate = useNavigate();
@@ -47,8 +48,6 @@ export default function CreateGroup({ image }) {
   const conversations = storedData
     ? storedData?.filter((conversation) => conversation.type !== "GROUP")
     : null;
-
-  /* Fix lỗi hiển thị avatar khi load lại dữ liệu */
 
   useEffect(() => {
     const newSocket = new WebSocket(`${process.env.REACT_APP_SOCKET_CHAT}/ws/group`);
@@ -117,6 +116,22 @@ export default function CreateGroup({ image }) {
           method: "GET",
         },
       );
+      if (response.status === 401) {
+        const cookies = new Cookies();
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch conversations");
       }
@@ -141,6 +156,7 @@ export default function CreateGroup({ image }) {
     }));
 
     if (socket && user) {
+      console.log(socket)
       const create = {
         id: uuidv4(),
         tgm: "TGM01",

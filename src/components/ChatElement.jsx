@@ -18,27 +18,21 @@ function ChatElement({
   id,
   chatAvatar,
   chatName,
-  topChatActivity,
-  lastUpdateAt,
+  topChatActivities,
+  updatedAt,
 }) {
   const cookies = new Cookies();
   const [tokenFromCookies, setTokenFromCookies] = useState("");
   const [userIDFromCookies, setUserIDFromCookies] = useState("");
   useEffect(() => {
-    // Gán giá trị lấy được từ cookies vào state userIDFromCookies
-    // const userID = getUserIDFromCookie();
-    // setUserIDFromCookies(userID);
-    // Lấy token từ cookies và giải mã nó
 
     const userIDFromCookie = cookies.get("userID");
     if (userIDFromCookie) {
-      // const tokenDecrypted = decryptData(tokenFromCookie);
       setUserIDFromCookies(userIDFromCookie);
     }
 
     const tokenFromCookie = cookies.get("token");
     if (tokenFromCookie) {
-      // const tokenDecrypted = decryptData(tokenFromCookie);
       setTokenFromCookies(tokenFromCookie);
     }
   }, []);
@@ -123,25 +117,14 @@ function ChatElement({
               console.log(">>>>>playNotificationSound>>>>>>>>>");
             }
           }
-          // Xử lý dữ liệu được gửi đến ở đây
-          // if (jsonData.tcm === "TCM04") {
-          //   const messageIDToDelete = jsonData.messageID;
-          //   // Lọc ra các tin nhắn mà không có messageIDToDelete
-          //   const updatedMessages = conversationsIndex?.filter(
-          //     (msg) => msg.messageID !== messageIDToDelete,
-          //   );
-          //   setConversationsIndex(updatedMessages);
-          //   console.log("Updated messages after deleting:", updatedMessages);
-          // }
         } else {
           // console.error("Received data is not valid JSON:", data);
-          // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
         }
       };
       setSocket(newSocket);
       return () => {
         if (newSocket.readyState === 1) {
-          newSocket.close(); // Đóng kết nối khi component unmount hoặc userID thay đổi
+          newSocket.close();
         }
       };
     }
@@ -157,7 +140,6 @@ function ChatElement({
         tokenFromCookies,
         timestamp,
       );
-      // console.log(`>>>>>${chatName}>>>>>>>>`, fetchedMessages);
       if (fetchedMessages) {
         setTopChat(fetchedMessages[fetchedMessages.length - 1]);
         const topChat2 = fetchedMessages[fetchedMessages.length - 1];
@@ -210,39 +192,20 @@ function ChatElement({
 
   // console.log(">>>>>TOPCHATTOHOW>>>>>>>>>", topChatToShow());
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     // Tăng thời gian timestamp lên 1 giây
-  //     setTimeOrginal((prevTimestamp) => {
-  //       const newTimestamp = new Date(prevTimestamp);
-  //       newTimestamp.setSeconds(newTimestamp.getSeconds() + 1);
-  //       return newTimestamp;
-  //     });
-  //   }, 1000);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Tăng thời gian timestamp lên 1 giây
+      setTimeOrginal((prevTimestamp) => {
+        const newTimestamp = new Date(prevTimestamp);
+        newTimestamp.setSeconds(newTimestamp.getSeconds() + 1);
+        return newTimestamp;
+      });
+    }, 1000);
 
-  //   // Xóa interval khi component unmount
-  //   return () => clearInterval(interval);
-  // }, []);
+    // Xóa interval khi component unmount
+    return () => clearInterval(interval);
+  }, []);
 
-  //Tính số lượng tin nhắn chưa đọc
-  // function countUnreadMessages(data) {
-  //   let unreadCount = 0;
-
-  //   data?.forEach((chat) => {
-  //     chat.chatActivity?.forEach((message) => {
-  //       if (message.userID !== "1" && message.status.read.length === 0) {
-  //         unreadCount++;
-  //       }
-  //     });
-  //   });
-
-  //   return unreadCount;
-  // }
-  // Sử dụng hàm với dữ liệu của bạn
-  // const unreadCount = countUnreadMessages(topChatActivity);
-  // console.log("Số tin nhắn chưa đọc:", unreadCount);
-  // const statusRead = topChatActivity[a].chatActivity[b].status.read.length;
-  // console.log(">>>>>>>>>>>>>>", statusRead);
 
   function formatTimeDifference(timestamp) {
     const currentDate = new Date();
@@ -279,12 +242,12 @@ function ChatElement({
     return `${Math.floor(monthsDifference)} tháng`;
   }
 
-  const [timestamp, setTimestamp] = useState(lastUpdateAt);
-  // const [timeOrginal, setTimeOrginal] = useState(new Date(timestamp));
+  const [timestamp, setTimestamp] = useState(updatedAt);
+  const [timeOrginal, setTimeOrginal] = useState(new Date(timestamp));
   const [timeDifference, setTimeDifference] = useState("");
   // console.log("timestamp", timestamp);
-  // const timestamp = lastUpdateAt;
-  // const timestamp = topChatActivity[a].chatActivity[b].timetamp;
+  // const timestamp = updatedAt;
+  // const timestamp = topChatActivities[a].chatActivity[b].timetamp;
 
   const originalDate = new Date(timestamp);
   const adjustedDate = new Date(originalDate.getTime());
@@ -293,12 +256,6 @@ function ChatElement({
   }, [timestamp]);
   // console.log(timeDifference);
 
-  // useEffect(() => {
-  //   const originalDate = new Date(timestamp);
-  //   const adjustedDate = new Date(timeOrginal.getTime());
-  //   setTimeDifference(formatTimeDifference(adjustedDate));
-  // }, [timeOrginal]);
-  // console.log(timeDifference);
 
   const fetchMessages = async (id, x, y, token, timestamp) => {
     // console.table({ id, x, y, token });
@@ -311,6 +268,21 @@ function ChatElement({
           },
         },
       );
+      if (response.status === 401) {
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       // console.log("Data:", response);
       return response.data;
     } catch (error) {
@@ -330,18 +302,17 @@ function ChatElement({
   useEffect(() => {
     setReadByOnClick(false);
   }, [id]);
-  console.log(topChatActivity)
   return (
     <div
       onClick={() => {
         handOnClick();
       }}
       className={`${readByOnClick && id === sessionStorage.getItem("chatID")
-          ? "bg-[#E1EDFE]"
-          : ""
+        ? "bg-[#E1EDFE]"
+        : ""
         }  z-50 pl-4 pr-1`}
     >
-      {topChatActivity?.length >= 0 ? (
+      {topChatActivities?.length >= 0 ? (
         <div
           className={`flex h-[74px] w-full items-center pr-2 ${
             // countTopChatActivity <= 10 ? "pr-1" : ""
@@ -449,8 +420,8 @@ function ChatElement({
                     </div>
                     <div
                       className={`transition-min-width flex min-w-[calc(100vw-200px)] items-center text-sm ${readByOnClick
-                          ? "font-medium text-[#7589A3]"
-                          : "font-bold text-[#081C36] "
+                        ? "font-medium text-[#7589A3]"
+                        : "font-bold text-[#081C36] "
                         }  duration-200  md:min-w-full`}
                     >
                       <span className="overflow-hidden truncate overflow-ellipsis whitespace-nowrap md:w-[175px]">
@@ -466,7 +437,7 @@ function ChatElement({
               <div>
                 <span className="truncate text-xs">{timeDifference}</span>
               </div>
-              {unreadCount != 0 ? (
+              {unreadCount !== 0 ? (
                 <>
                   <div className="flex h-4 w-4 flex-grow items-center justify-center place-self-end rounded-full bg-[#C81A1F] text-white">
                     <span className="text-xs">{unreadCount}</span>

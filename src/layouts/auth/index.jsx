@@ -35,24 +35,18 @@ export default function AuthLayout() {
   //=========================================================
 
   useEffect(() => {
-    // Gọi API ở đây
     const fetchQrCode = async () => {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/authenticate/qr-code`,
         );
-        // Nếu sử dụng axios:
-        // const response = await axios.post('your_api_url_here', { key: 'value' });
 
         if (!response.ok) {
           throw new Error("Failed to fetch QR code");
         }
 
         const data = await response.json();
-        // console.log(data);
-        setQrCodeUrl("data:image/png;base64," + data.field2); // Thay "qrCodeUrl" bằng trường dữ liệu thực tế từ API
-        // console.log(qrCodeUrl);
-        //=========SOCKET=========
+        setQrCodeUrl("data:image/png;base64," + data.field2); 
         const socketLink = data.field1;
         const newSocket = new WebSocket(
           `${process.env.SOCKET_ACCOUNT}/ws/auth/` + data.field1,
@@ -66,14 +60,13 @@ export default function AuthLayout() {
         return () => {
           newSocket.close();
         };
-        //========================
       } catch (error) {
         console.error("Error fetching QR code:", error.message);
       }
     };
 
     fetchQrCode();
-  }, []); // useEffect sẽ chạy một lần khi component được render
+  }, []);
 
   useEffect(() => {
     if (socket) {
@@ -112,21 +105,17 @@ export default function AuthLayout() {
       );
 
       if (response.ok) {
-        // Xử lý khi API trả về thành công
         const token = await response.json();
         console.log(">>>>>>>TOKEN>>>>>>>>>>", token.field);
-        // navigate('/app', {token: token.field});
         navigate("/app", {
           state: { token: token.field, phoneNumber: phoneNumber },
         });
         console.log("API call successful");
       } else {
-        // Xử lý khi API trả về lỗi
         navigate("/auth/login");
         console.error("API call failed");
       }
     } catch (error) {
-      // Xử lý lỗi khi gọi API
       navigate("/");
       console.error("Error calling API:", error);
     }
@@ -137,10 +126,9 @@ export default function AuthLayout() {
       if (isJSON(event.data)) {
         let data = JSON.parse(event.data);
         console.log(data);
-        if (data.token != null) {
-          // console.log(data.token);
+        if (data.token !== null) {
           navigate("/app", { token: data.token });
-        } else if (data.connect == "ACCEPT") {
+        } else if (data.connect === "ACCEPT") {
           let device = navigator.userAgent.match("Windows") ? "Windows" : "MAC";
           let day = new Date();
           let time =
@@ -149,7 +137,6 @@ export default function AuthLayout() {
           socket.send(
             JSON.stringify({ device: device, time: time, location: location }),
           );
-          // console.log(socket);
         }
       }
     };
@@ -198,9 +185,7 @@ export default function AuthLayout() {
         </div>
 
         <div className="mx-auto my-5 w-full bg-white pb-6 shadow-md lg:max-w-[388px]">
-          {/* =================================================================================== */}
           <Outlet />
-          {/* =================================================================================== */}
         </div>
 
         <div className="m-3 mt-10">

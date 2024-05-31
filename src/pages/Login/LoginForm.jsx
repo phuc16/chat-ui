@@ -57,7 +57,7 @@ export default function LoginForm() {
         },
       );
       const data = await response.json();
-      if (response.status == 401) {
+      if (response.status === 401) {
         setFlag(true);
         setError(data.msg)
         console.error("Failed login");
@@ -209,7 +209,7 @@ export default function LoginForm() {
             </p>
 
             <p className="text-black-600 mb-3 w-60 text-center text-base font-normal">
-              Zalo trên máy tính
+              Zalo trên máy tính - TODO
             </p>
           </div>
 

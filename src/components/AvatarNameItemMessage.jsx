@@ -22,50 +22,7 @@ function AvatarNameItemMessage({
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const { id } = queryString.parse(location.search);
-  const [newMessage, setNewMessage] = useState("Huy");
-  // console.log(">>>>>>>>>>>>>>", topChatActivity);
-  // const countTopChatActivity = topChatActivity.length;
-  // const a = topChatActivity.length - 1;
-  // console.log(a);
-  // const b = topChatActivity[a].chatActivity.length - 1;
-  // console.log(b);
-  // const c = topChatActivity[a].chatActivity[b].content.length - 1;
-  // const messageContent = topChatActivity[a].chatActivity[b].content[c].value;
-  const [messageContent, setMessageContent] = useState("");
   const unreadCount = 1;
-  // if (topChatActivity.length > 0) {
-  //   // console.log(">>>>>>HUYHUY>>>>>>>>>", topChatActivity[-1].contents);
-  //   setMessageContent(
-  //     topChatActivity[topChatActivity.length - 1].contents[0].value,
-  //   );
-  //   console.log(
-  //     ">>>>>>topChatActivitytopChatActivitytopChatActivity>>>>>>>>",
-  //     topChatActivity[topChatActivity.length - 1].contents[0].value,
-  //   );
-  //   console.log(">>>>>MEss>>>>>>>>>", messageContent);
-  // } else {
-  //   console.log("topChatActivity is empty");
-  // }
-
-  //Tính số lượng tin nhắn chưa đọc
-  // function countUnreadMessages(data) {
-  //   let unreadCount = 0;
-
-  //   data?.forEach((chat) => {
-  //     chat.chatActivity?.forEach((message) => {
-  //       if (message.userID !== "1" && message.status.read.length === 0) {
-  //         unreadCount++;
-  //       }
-  //     });
-  //   });
-
-  //   return unreadCount;
-  // }
-  // Sử dụng hàm với dữ liệu của bạn
-  // const unreadCount = countUnreadMessages(topChatActivity);
-  // console.log("Số tin nhắn chưa đọc:", unreadCount);
-  // const statusRead = topChatActivity[a].chatActivity[b].status.read.length;
-  // console.log(">>>>>>>>>>>>>>", statusRead);
 
   function formatTimeDifference(timestamp) {
     const currentDate = new Date();
@@ -103,12 +60,10 @@ function AvatarNameItemMessage({
   }
 
   const timestamp = item.timestamp;
-  // const timestamp = topChatActivity[a].chatActivity[b].timetamp;
   const originalDate = new Date(timestamp);
   // Trừ 7 giờ
   const adjustedDate = new Date(originalDate.getTime() - 7 * 60 * 60 * 1000);
   const timeDifference = formatTimeDifference(adjustedDate);
-  // console.log(timeDifference);
 
   const [tokenFromCookies, setTokenFromCookies] = useState("");
 
@@ -128,13 +83,28 @@ function AvatarNameItemMessage({
             method: "GET",
           },
         );
+        if (response.status === 401) {
+          const allCookies = cookies.getAll();
+          for (const cookieName in allCookies) {
+            if (allCookies.hasOwnProperty(cookieName)) {
+              cookies.remove(cookieName, {
+                path: "/",
+              });
+              cookies.remove(cookieName, {
+                path: "/auth",
+              });
+            }
+          }
+          localStorage.clear();
+          throw new Error("Unauthorized");
+        }
         if (!response.ok) {
           throw new Error("Failed to search message in conversations");
         }
         const data = await response.json();
         setConversation(data);
         setMessageIDRef(item.messageID);
-        console.log("Conservation>>>>>>>>>>>:", data);
+        // console.log("Conversation>>>>>>>>>>>:", data);
       } catch (error) {
         console.error("Error fetching search message in conversations:", error);
       }
@@ -148,9 +118,9 @@ function AvatarNameItemMessage({
         className={`flex h-[68px] w-full items-center pr-2 ${
           // countTopChatActivity <= 10 ? "pr-1" : ""
           "pr-1"
-        } cursor-pointer pl-3 hover:bg-[#F0F2F5]`}
+          } cursor-pointer pl-3 hover:bg-[#F0F2F5]`}
         onClick={() => {
-          console.log("Clicked");
+          // console.log("Clicked");
           handleSetMessagesInConversation();
         }}
       >
@@ -169,12 +139,12 @@ function AvatarNameItemMessage({
           id="content"
         >
           <div className="">
-            {unreadCount != 0 ? (
+            {unreadCount !== 0 ? (
               <>
                 <div className="grid gap-y-1">
                   <div>
                     <span className="text-sm font-semibold text-[#081C36]">
-                      {item.userID == localStorage.getItem("userID")
+                      {item.userID === localStorage.getItem("userID")
                         ? localStorage.getItem("userName")
                         : chatName}
                     </span>
@@ -210,7 +180,7 @@ function AvatarNameItemMessage({
             <div>
               <span className="truncate text-xs">{timeDifference}</span>
             </div>
-            {unreadCount != 0 ? (
+            {unreadCount !== 0 ? (
               <>
                 {/* <div className="flex h-4 w-4 flex-grow items-center justify-center place-self-end rounded-full bg-[#C81A1F] text-white">
                   <span className="text-xs">{unreadCount}</span>

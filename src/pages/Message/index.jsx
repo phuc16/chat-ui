@@ -85,20 +85,19 @@ useEffect(() => {
       if (isJSON(data)) {
         const jsonData = JSON.parse(data);
         console.log("Message received:", jsonData);
-        // Xử lý dữ liệu được gửi đến ở đây
-        if (jsonData.tgm === "TGM01" || jsonData.tgm == "TGM02"
-          || jsonData.tgm == "TGM03"
-          || jsonData.tgm == "TGM04"
-          || jsonData.tgm == "TGM05"
-          || jsonData.tgm == "TGM06"
-          || jsonData.tgm == "TGM07"
-          || jsonData.tgm == "TGM08"
-          || jsonData.tgm == "TGM09"
-          || jsonData.tgm == "TGM010"
-          || jsonData.tgm == "TGM011"
-          || jsonData.tgm == "TGM012"
-          || jsonData.tgm == "TGM013"
-          || jsonData.tgm == "TGM014") {
+        if (jsonData.tgm === "TGM01" || jsonData.tgm === "TGM02"
+          || jsonData.tgm === "TGM03"
+          || jsonData.tgm === "TGM04"
+          || jsonData.tgm === "TGM05"
+          || jsonData.tgm === "TGM06"
+          || jsonData.tgm === "TGM07"
+          || jsonData.tgm === "TGM08"
+          || jsonData.tgm === "TGM09"
+          || jsonData.tgm === "TGM010"
+          || jsonData.tgm === "TGM011"
+          || jsonData.tgm === "TGM012"
+          || jsonData.tgm === "TGM013"
+          || jsonData.tgm === "TGM014") {
           setLoadCons(true);
         }
       } else {
@@ -137,18 +136,18 @@ useEffect(() => {
         console.log("Message received:", jsonData);
         console.log("senderName", jsonData.senderName);
         console.log("tum>>>>>>>>>", jsonData.tum);
-        if (jsonData.tgm == "TGM02") {
+        if (jsonData.tgm === "TGM02") {
           navigate("/app")
           setLoadCons(true);
           fetchGroup(jsonData.idChat);
           // fetchGroup(jsonData.idChat);
-        } else if (jsonData.tgm == "TGM06") {
-          if (jsonData.userID == userID) {
+        } else if (jsonData.tgm === "TGM06") {
+          if (jsonData.userID === userID) {
             navigate("/app")
           }
           setLoadCons(true);
           fetchGroup(jsonData.idChat);
-        } else if (jsonData.tgm == "TGM01" || jsonData.tgm == "TGM03" || jsonData.tgm == "TGM04" || jsonData.tgm == "TGM05" || jsonData.tgm == "TGM07" || jsonData.tgm == "TGM08" || jsonData.tgm == "TGM09" || jsonData.tgm == "TGM010" || jsonData.tgm == "TGM011" || jsonData.tgm == "TGM012" || jsonData.tgm == "TGM013" || jsonData.tgm == "TGM014") {
+        } else if (jsonData.tgm === "TGM01" || jsonData.tgm === "TGM03" || jsonData.tgm === "TGM04" || jsonData.tgm === "TGM05" || jsonData.tgm === "TGM07" || jsonData.tgm === "TGM08" || jsonData.tgm === "TGM09" || jsonData.tgm === "TGM010" || jsonData.tgm === "TGM011" || jsonData.tgm === "TGM012" || jsonData.tgm === "TGM013" || jsonData.tgm === "TGM014") {
           // console.log(jsonData);
           setLoadCons(true);
           fetchGroup(jsonData.idChat);
@@ -171,7 +170,6 @@ useEffect(() => {
         }
       } else {
         // console.error("Received data is not valid JSON:", data);
-        // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
       }
     };
 
@@ -212,6 +210,21 @@ const reloadCons = async () => {
         method: "GET",
       },
     );
+    if (response.status === 401) {
+      const allCookies = cookies.getAll();
+      for (const cookieName in allCookies) {
+        if (allCookies.hasOwnProperty(cookieName)) {
+          cookies.remove(cookieName, {
+            path: "/",
+          });
+          cookies.remove(cookieName, {
+            path: "/auth",
+          });
+        }
+      }
+      localStorage.clear();
+      throw new Error("Unauthorized");
+    }
     if (!response.ok) {
       throw new Error("Failed to fetch conversations");
     }
@@ -272,6 +285,21 @@ useEffect(() => {
           method: "GET",
         },
       );
+      if (response.status === 401) {
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch conversations");
       }
@@ -298,51 +326,6 @@ useEffect(() => {
 useEffect(() => {
   setConversations(JSON.parse(localStorage.getItem("conversations")));
 }, [cons]);
-
-// const openFullSocketForChar = (chatID) => {
-//   console.log("chatID", chatID);
-//   if (chatID) {
-//     const newSocket = new WebSocket(`ws://localhost:8082/ws/chat/${chatID}`);
-//     newSocket.onopen = () => {
-//       console.warn(
-//         "WebSocket 'ws://localhost:8082/ws/chat/' for UserID: ",
-//         chatID,
-//         " OPENED",
-//       );
-//     };
-
-//     newSocket.onmessage = (event) => {
-//       function isJSON(data) {
-//         try {
-//           JSON.parse(data);
-//           return true;
-//         } catch (error) {
-//           return false;
-//         }
-//       }
-//       const data = event.data;
-//       if (isJSON(data)) {
-//         const jsonData = JSON.parse(data);
-//         console.log("Message received:", jsonData);
-//         // Xử lý dữ liệu được gửi đến ở đây
-//         // if (jsonData) {
-
-//         // }
-//       } else {
-//         // console.error("Received data is not valid JSON:", data);
-//         // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
-//       }
-//     };
-
-//     setSocket(newSocket);
-
-//     return () => {
-//       newSocket.close(); // Đóng kết nối khi component unmount hoặc userID thay đổi
-//     };
-//   }
-// };
-
-// console.log("chay render", conversations);
 
 const openFullSocketForChar = (chatID) => {
   console.log("chatID", chatID);
@@ -371,13 +354,11 @@ const openFullSocketForChar = (chatID) => {
       if (isJSON(data)) {
         const jsonData = JSON.parse(data);
         console.log("Message received:", jsonData);
-        // Xử lý dữ liệu được gửi đến ở đây
         // if (jsonData) {
 
         // }
       } else {
         // console.error("Received data is not valid JSON:", data);
-        // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
       }
     };
 

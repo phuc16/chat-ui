@@ -115,12 +115,8 @@ const Conversation = () => {
   const cld = new Cloudinary({ cloud: { cloudName: "djs0jhrpz" } });
   const [imageUrl, setImageUrl] = useState("");
 
-  // Hàm xử lý khi chọn emoji từ picker
   const handleEmojiSelect = (emoji) => {
-    // console.log("Emoji selected:", emoji);
-    // Gửi emoji qua WebSocket
     sendMessageWithTextViaSocket(emoji, "emoji");
-    // Đóng picker emoji sau khi chọn
     setOpenPicker(false);
   };
 
@@ -143,12 +139,10 @@ const Conversation = () => {
 
       console.log("File uploaded successfully. File URL:", fileUrl);
 
-      // Tạo key cho file upload
-      const fileExtension = file.name.split(".").pop(); // Lấy phần đuôi của file
-      const fileSizeKB = Math.round(file.size / 1024); // Kích thước file tính bằng KB
+      const fileExtension = file.name.split(".").pop();
+      const fileSizeKB = Math.round(file.size / 1024);
       const key = `${fileExtension}|${file.name}|${fileSizeKB}KB`;
 
-      // Gửi tin nhắn chứa link ảnh và key cho người nhận
       const imageMessage = {
         contents: [
           {
@@ -161,7 +155,6 @@ const Conversation = () => {
       console.log("Image message:", imageMessage);
     } catch (error) {
       console.error("Error uploading file:", error);
-      // Xử lý lỗi ở đây
       throw error;
     }
   };
@@ -194,7 +187,6 @@ const Conversation = () => {
       sendMessageWithTextViaSocket(imageMessageArray, "multiImage");
     } catch (error) {
       console.error("Error uploading file:", error);
-      // Xử lý lỗi ở đây
     }
   };
 
@@ -218,7 +210,6 @@ const Conversation = () => {
         );
         setImageUrl(response.data.secure_url);
 
-        // Gửi tin nhắn chứa link ảnh và key cho người nhận
         const imageMessage = {
           contents: [
             {
@@ -235,13 +226,8 @@ const Conversation = () => {
       });
   };
 
-  // Hàm xử lý khi người dùng chọn ảnh
   const handleImageSelection2 = (e) => {
     const file = e.target.files;
-    // if (file) {
-    //   handleFileUpload(file);
-    //   setContentType("image");
-    // }
     const files = Array.from(file);
     if (files && files.length > 0) {
       console.log("Files:", files.toString());
@@ -249,20 +235,10 @@ const Conversation = () => {
     uploadMultiImageToS3(files);
   };
 
-  // // Hàm xử lý khi người dùng chọn file
-  // const handleFileChange = (event) => {
-  //   const selectedFile = event.target.files[0];
-  //   // console.log("Selected file:", selectedFile);
-  //   if (selectedFile) {
-  //     handleFileUpload(selectedFile);
-  //   }
-  // };
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      // handleFileUpload(selectedFile);
       uploadFileToS3(selectedFile);
-      // Đặt loại nội dung là file
       setContentType("file");
     }
   };
@@ -270,19 +246,12 @@ const Conversation = () => {
   const handleVideoChange = (event) => {
     const selectedVideo = event.target.files[0];
     if (selectedVideo) {
-      // handleFileUpload(selectedFile);
       uploadFileToS3(selectedVideo);
-      // Đặt loại nội dung là file
       setContentType("mp4");
     }
   };
 
   const [tokenFromCookies, setTokenFromCookies] = useState("");
-  // const params = useParams();
-  // console.log("Params:", params);
-  // const { id, type } = params;
-  // console.log("ID:", id);
-  // console.log("Type:", type);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const { id } = queryString.parse(location.search);
@@ -291,14 +260,12 @@ const Conversation = () => {
 
   const [chatType, setChatType] = useState("");
 
-  // const [conservation, setConservation] = useState(localStorage.getItem("conservations"));
 
   useEffect(() => {
-    const conservation = JSON.parse(localStorage.getItem("conversations"));
-    const filteredConversations = conservation?.filter(
+    const conversation = JSON.parse(localStorage.getItem("conversations"));
+    const filteredConversations = conversation?.filter(
       (chat) => chat.chatName === chatName,
     );
-    // setConservationFriend(filteredConversations);
     if (filteredConversations.length > 0) {
       setChatType(filteredConversations[0].type);
     }
@@ -309,7 +276,7 @@ const Conversation = () => {
   const [endIndex, setEndIndex] = useState(50);
 
   const [message, setMessage] = useState("");
-  const [contentType, setContentType] = useState("text"); // Mặc định là gửi tin nhắn text
+  const [contentType, setContentType] = useState("text");
   const [keyTypeMessage, setKeyTypeMessage] = useState("text");
   const [socket, setSocket] = useState(null);
   const [userIDFromCookies, setUserIDFromCookies] = useState("");
@@ -327,14 +294,6 @@ const Conversation = () => {
       setDisplayComposingMessage(false);
     }
   };
-  // Hàm gửi tin nhắn qua WebSocket với nội dung là text từ input
-  // const handleSendMessage = () => {
-  //   if (message.trim() !== "") {
-  //     console.log("Gửi tin nhắn:", message);
-  //     sendMessageWithTextViaSocket(message);
-  //     setMessage(""); // Xóa nội dung của input message sau khi gửi
-  //   }
-  // };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -353,6 +312,21 @@ const Conversation = () => {
           },
         },
       );
+      if (response.status === 401) {
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       // console.log("Data:", response.data);
       return response.data;
     } catch (error) {
@@ -361,26 +335,20 @@ const Conversation = () => {
     }
   };
 
-  // Hàm để lấy userID từ cookies và giải mã nó
   const getUserIDFromCookie = () => {
-    // Lấy userID từ cookies
     const userIDFromCookie = cookies.get("userID");
 
-    // Nếu có userID từ cookies, giải mã và trả về
     if (userIDFromCookie) {
       // const userIDDecrypted = decryptData(userIDFromCookie);
       return userIDFromCookie;
     }
 
-    // Nếu không có userID từ cookies, trả về null
     return null;
   };
 
   useEffect(() => {
-    // Gán giá trị lấy được từ cookies vào state userIDFromCookies
     const userID = getUserIDFromCookie();
     setUserIDFromCookies(userID);
-    // Lấy token từ cookies và giải mã nó
     const tokenFromCookie = cookies.get("token");
     if (tokenFromCookie) {
       // const tokenDecrypted = decryptData(tokenFromCookie);
@@ -388,26 +356,6 @@ const Conversation = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const fetchedMessages = await fetchMessages(
-  //       id,
-  //       startIndex,
-  //       endIndex,
-  //       tokenFromCookies,
-  //     );
-  //     setMessages(fetchedMessages);
-  //   };
-  //   const newSocket = new WebSocket(`ws://localhost:8082/ws/chat/${id}`);
-  //   newSocket.onopen = () => {
-  //     // console.log("WebSocket connected >>>>>>>>HUy");
-  //   };
-  //   setSocket(newSocket);
-  //   // return () => {
-  //   //   newSocket.close();
-  //   // };
-  //   if (id && tokenFromCookies) fetchData();
-  // }, [id, tokenFromCookies, message, startIndex, endIndex]);
   useEffect(() => {
     const fetchData = async () => {
       const timestamp = Date.now();
@@ -420,12 +368,10 @@ const Conversation = () => {
       );
       const messagesNoHandle = fetchedMessages;
 
-      // Tạo một bản đồ (map) giữa messageID và object message
       const messageMap = new Map(
         messagesNoHandle?.map((message) => [message.messageID, message]),
       );
 
-      // Lặp qua mỗi message để thay thế parentID bằng object message tương ứng
       messagesNoHandle?.forEach((message) => {
         if (message.parentID) {
           const parentMessage = messageMap.get(message.parentID);
@@ -445,13 +391,8 @@ const Conversation = () => {
 
     if (id && tokenFromCookies) fetchData();
 
-    // return () => {
-    //   // if (newSocket.readyState === 1)
-    //   newSocket.close();
-    // };
   }, [reloadCounter, id, tokenFromCookies, startIndex, endIndex]);
 
-  // useEffect để chạy lại fetchData khi id hoặc tokenFromCookies thay đổi
   useEffect(() => {
     if (id && tokenFromCookies) {
       setReloadCounter((prevCounter) => prevCounter + 1);
@@ -459,7 +400,6 @@ const Conversation = () => {
   }, []);
 
   const [parentIdMsg, setParentIdMsg] = useState("");
-  // console.log("parentIdMsg:", parentIdMsg);
 
   const sendMessageWithTextViaSocket = (
     messageContent,
@@ -472,9 +412,7 @@ const Conversation = () => {
     // console.log("SocketNew:", socketNew);
     // console.log("parentID:", parentID);
     const uuid = uuidv4();
-    // Lấy thời gian hiện tại dưới dạng timestamp
     const currentTime = new Date().getTime();
-    // Tạo UUID có định dạng mong muốn
     const formattedUUID = `${uuid.slice(0, 8)}-${uuid.slice(
       9,
       13,
@@ -498,18 +436,16 @@ const Conversation = () => {
       if (messageForward) {
         message.contents = messageForward;
       } else {
-        // Thêm nội dung tương ứng vào tin nhắn
         if (contentType === "text") {
           message.contents.push({
             key: "text",
             value: messageContent,
           });
         } else if (contentType === "file") {
-          // Lấy phần tử đầu tiên trong mảng contents
           const fileContent = messageContent.contents[0];
           message.contents.push({
             key: fileContent.key,
-            value: fileContent.value, // Đây là đường dẫn URL của file
+            value: fileContent.value,
           });
         } else if (contentType === "emoji") {
           message.contents.push({
@@ -543,8 +479,8 @@ const Conversation = () => {
         else console.log("No content to send");
       } else {
         // console.log("WebSocket connected");
-        setMessage(""); // Xóa nội dung của input message sau khi gửi
-        setSentMessage(message); // Cập nhật state của sentMessage
+        setMessage("");
+        setSentMessage(message);
         if (message.contents.length > 0) socket.send(JSON.stringify(message));
         else console.log("No content to send");
         console.log(message);
@@ -554,13 +490,6 @@ const Conversation = () => {
     }
   };
 
-  // const handleSendMessage = () => {
-  //   if (message.trim() !== "") {
-  //     console.log("Gửi tin nhắn:", message);
-  //     sendMessageWithTextViaSocket(message);
-  //     setMessage(""); // Xóa nội dung của input message sau khi gửi
-  //   }
-  // };
 
   const handleSendMessage = () => {
     if (message.startsWith("http://") || message.startsWith("https://")) {
@@ -598,7 +527,6 @@ const Conversation = () => {
   //     newEndIndex,
   //     tokenFromCookies,
   //   );
-  //   // Đảo ngược danh sách tin nhắn mới và cập nhật state
   //   const reversedMoreMessages = moreMessages.reverse();
   //   setMessages((prevMessages) => [...reversedMoreMessages, ...prevMessages]);
   //   setStartIndex(newStartIndex);
@@ -607,7 +535,6 @@ const Conversation = () => {
 
   // const handleScroll = (e) => {
   //   const { scrollTop } = e.target;
-  //   // Kiểm tra nếu người dùng cuộn đến đầu trang
   //   if (scrollTop === 0) {
   //     loadOlderMessages();
   //   }
@@ -625,7 +552,6 @@ const Conversation = () => {
           if (data && data.startsWith("{")) {
             const jsonData = JSON.parse(data);
             console.log("Received JSON data CONSERVATION:", jsonData);
-            // Kiểm tra xem tin nhắn không phải từ bạn
             const messageFromOtherUser = jsonData.userID !== userIDFromCookies;
             // console.log("Message from other user: ==========================================", messageFromOtherUser);
             if (
@@ -636,13 +562,11 @@ const Conversation = () => {
               // console.log("Message____________________:", messages);
               setIdA(jsonData.id);
               if (jsonData) {
-                // Kiểm tra xem tin nhắn đã tồn tại trong mảng messages chưa
                 const messageExists = messages.some(
                   (msg) => msg.id === jsonData.id,
                 );
                 if (!messageExists) {
                   // setMessages((prevMessages) => [...prevMessages, jsonData]);
-                  // Tạo một bản đồ (map) giữa messageID và object message
                   const messageMap = new Map(
                     messages?.map((message) => [message.messageID, message]),
                   );
@@ -650,17 +574,17 @@ const Conversation = () => {
                   const parentMessage = messageMap.get(jsonData.parentID);
                   if (messages?.length > 0) {
                     setMessages((prevMessages) => [...prevMessages,
-                      {
-                        messageID: jsonData.id,
-                        userID: jsonData.userID,
-                        userAvatar: jsonData.userAvatar,
-                        userName: jsonData.userName,
-                        timestamp: jsonData.timestamp,
-                        contents: jsonData.contents,
-                        parentID: parentMessage,
-                        hiddens: [],
-                        recall: false,
-                      },
+                    {
+                      messageID: jsonData.id,
+                      userID: jsonData.userID,
+                      userAvatar: jsonData.userAvatar,
+                      userName: jsonData.userName,
+                      timestamp: jsonData.timestamp,
+                      contents: jsonData.contents,
+                      parentID: parentMessage,
+                      hiddens: [],
+                      recall: false,
+                    },
                     ]);
                   } else {
                     setMessages([{
@@ -687,13 +611,12 @@ const Conversation = () => {
                   msg.messageID === messageIDToRecall ||
                   msg.id === messageIDToRecall
                 ) {
-                  // Thay đổi nội dung của tin nhắn thành "Tin nhắn đã được thu hồi"
                   return {
                     ...msg,
                     contents: [
                       { key: "text", value: "Tin nhắn đã được thu hồi" },
                     ],
-                    recall: true, // Có thể đánh dấu tin nhắn này đã được thu hồi
+                    recall: true,
                   };
                 }
                 return msg;
@@ -708,7 +631,6 @@ const Conversation = () => {
               jsonData.typeNotify === "SUCCESS"
             ) {
               const messageIDToDelete = messageDeletedID;
-              // Lọc ra các tin nhắn mà không có messageIDToDelete
               const updatedMessages = messages?.filter(
                 (msg) => msg.messageID !== messageIDToDelete,
               );
@@ -725,15 +647,6 @@ const Conversation = () => {
               console.log(
                 "Recall message successfully>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",
               );
-              // const messageIDToDelete = messageRecalledID;
-              // // Lọc ra các tin nhắn mà không có messageIDToDelete
-              // const updatedMessages = messages?.filter(
-              //   (msg) => msg.messageID !== messageIDToDelete,
-              // );
-              // // setMessageRecalledID("");
-              // // setMessageDeletedID("");
-              // setMessages(updatedMessages);
-              // console.log("Updated messages after deleting:", updatedMessages);
 
               const messageIDToRecall = messageRecalledID;
               const updatedMessages = messages?.map((msg) => {
@@ -741,13 +654,12 @@ const Conversation = () => {
                   msg.messageID === messageIDToRecall ||
                   msg.id === messageIDToRecall
                 ) {
-                  // Thay đổi nội dung của tin nhắn thành "Tin nhắn đã được thu hồi"
                   return {
                     ...msg,
                     contents: [
                       { key: "text", value: "Tin nhắn đã được thu hồi" },
                     ],
-                    recall: true, // Có thể đánh dấu tin nhắn này đã được thu hồi
+                    recall: true,
                   };
                 }
                 return msg;
@@ -777,7 +689,6 @@ const Conversation = () => {
 
   // console.log("Messages:", messages);
 
-  // Hàm cuộn xuống dưới cùng của khung chat
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -785,14 +696,13 @@ const Conversation = () => {
   };
   useEffect(() => {
     scrollToBottom();
-  }, [messages]); // Cuộn xuống dưới cùng mỗi khi danh sách tin nhắn thay đổi
+  }, [messages]);
 
   useEffect(() => {
     if (sentMessage) {
       scrollToBottom();
       // setMessages((prevMessages) => [...prevMessages, sentMessage]); huyy
       console.log("Sent message:", sentMessage);
-      // Tạo một bản đồ (map) giữa messageID và object message
       const messageMap = new Map(
         messages?.map((message) => [message.messageID, message]),
       );
@@ -825,7 +735,7 @@ const Conversation = () => {
           recall: false,
         }])
       }
-      setSentMessage(null); // Đặt lại giá trị của sentMessage về null sau khi cập nhật tin nhắn
+      setSentMessage(null);
     }
   }, [sentMessage]);
 
@@ -833,9 +743,6 @@ const Conversation = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
 
-  const handleClickOpenDialog = () => {
-    setOpenDialog(true);
-  };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -857,6 +764,21 @@ const Conversation = () => {
             method: "GET",
           },
         );
+        if (response.status === 401) {
+          const allCookies = cookies.getAll();
+          for (const cookieName in allCookies) {
+            if (allCookies.hasOwnProperty(cookieName)) {
+              cookies.remove(cookieName, {
+                path: "/",
+              });
+              cookies.remove(cookieName, {
+                path: "/auth",
+              });
+            }
+          }
+          localStorage.clear();
+          throw new Error("Unauthorized");
+        }
         if (!response.ok) {
           throw new Error("Failed to fetch conversations");
         }
@@ -870,7 +792,6 @@ const Conversation = () => {
       }
     };
 
-    // Chỉ fetch nếu userID và token đã được thiết lập
     if (userIDFromCookies && tokenFromCookies) {
       fetchContact();
     }
@@ -1003,7 +924,6 @@ const Conversation = () => {
   const handleKeyPressTextArea = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      // Gửi tin nhắn hoặc thực hiện logic của bạn khi Enter được nhấn
       handleSendMessage();
       // console.log("Enter pressed");
     }
@@ -1016,7 +936,7 @@ const Conversation = () => {
   const [text1, setText1] = useState("Nhập nội dung cần tìm trong hội thoại");
   const [resultSearch, setResultSearch] = useState([]);
 
-  const handleSearchMessageInConservation = (value) => {
+  const handleSearchMessageInConversation = (value) => {
     if (value.trim() === "") {
       setText1("Nhập nội dung cần tìm trong hội thoại");
     } else {
@@ -1025,8 +945,7 @@ const Conversation = () => {
       const fetchSearchMsg = async () => {
         try {
           const response = await fetch(
-            `${
-              process.env.REACT_APP_SERVER_HOST
+            `${process.env.REACT_APP_SERVER_HOST
             }/api/v1/chat/search-bkw?chatID=${searchParams.get(
               "id",
             )}&y=20&key=${value}`,
@@ -1039,6 +958,21 @@ const Conversation = () => {
               method: "GET",
             },
           );
+          if (response.status === 401) {
+            const allCookies = cookies.getAll();
+            for (const cookieName in allCookies) {
+              if (allCookies.hasOwnProperty(cookieName)) {
+                cookies.remove(cookieName, {
+                  path: "/",
+                });
+                cookies.remove(cookieName, {
+                  path: "/auth",
+                });
+              }
+            }
+            localStorage.clear();
+            throw new Error("Unauthorized");
+          }
           if (!response.ok) {
             throw new Error("Failed to search message in conversations");
           }
@@ -1059,17 +993,13 @@ const Conversation = () => {
   const messageElementRef = useRef(null);
   const [messageIDRef, setMessageIDRef] = useState();
 
-  // Sử dụng useEffect để cuộn đến phần tử tin nhắn khi danh sách được cập nhật
   useEffect(() => {
-    // Kiểm tra xem messageID đã được xác định chưa
     if (messageIDRef) {
-      // Tìm vị trí của tin nhắn với messageID trong danh sách
       const messageIndex = messages.findIndex(
         (message) => message.messageID === messageIDRef,
       );
       console.log("messageIDRef:", messageIDRef);
       messageElementRef.current = document.getElementById("messageIDRef");
-      // Nếu tin nhắn được tìm thấy, cuộn đến vị trí của nó
       // if (messageIndex !== -1) {
       messageElementRef.current?.scrollIntoView({ behavior: "smooth" });
       // }
@@ -1118,7 +1048,7 @@ const Conversation = () => {
       if (message !== "" && !socketSent) {
         socket.send(JSON.stringify(messageSend));
         setSocketSent(true);
-      } else if (message == "") {
+      } else if (message === "") {
         setDisplayComposingMessage(false);
         setSocketSent(false);
         socket.send(
@@ -1159,7 +1089,6 @@ const Conversation = () => {
     const linkMessages = messages?.filter((message) => {
       return message.contents.some((content) => content.key === "link");
     });
-    // Lọc ra các tin nhắn thỏa mãn các điều kiện
     // const filteredMessages = messages?.filter((message) => {
     //   return (
     //     message.contents.some((content) => content.key === "link") && // có key là 'link'
@@ -1172,7 +1101,6 @@ const Conversation = () => {
 
     const fileMessages = messages?.filter((message) => {
       return message.contents.some((content) => {
-        // Kiểm tra xem khóa của nội dung có chứa ít nhất hai dấu "|" không
         return (content.key.match(/\|/g) || []).length >= 2;
       });
     });
@@ -1187,9 +1115,8 @@ const Conversation = () => {
     const day = date.getDate();
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
-    return `${day < 10 ? "0" : ""}${day}/${
-      month < 10 ? "0" : ""
-    }${month}/${year}`;
+    return `${day < 10 ? "0" : ""}${day}/${month < 10 ? "0" : ""
+      }${month}/${year}`;
   }
 
   const [openNotification, setOpenNotification] = useState(false);
@@ -1253,9 +1180,8 @@ const Conversation = () => {
           <div className="w-full px-4 pt-2">
             <div className="flex-col items-center border-b-[2px] pb-3">
               <div
-                className={`flex items-center ${
-                  true ? "border border-[#EBEDF0]" : "border"
-                } m-2 rounded-full p-2`}
+                className={`flex items-center ${true ? "border border-[#EBEDF0]" : "border"
+                  } m-2 rounded-full p-2`}
               >
                 <FontAwesomeIcon
                   className="w-3 px-2 "
@@ -1322,9 +1248,8 @@ const Conversation = () => {
             <div className={`flex overflow-hidden`}>
               <div
                 id="alert-dialog-description"
-                className={`max-h-[490px] w-full overflow-y-auto ${
-                  selectedContactObjs.length > 0 ? " w-7/12 " : ""
-                }`}
+                className={`max-h-[490px] w-full overflow-y-auto ${selectedContactObjs.length > 0 ? " w-7/12 " : ""
+                  }`}
               >
                 <div className={`w-full `}>
                   {contact?.map((item, index) => (
@@ -1364,7 +1289,6 @@ const Conversation = () => {
                         alt="Name"
                         src={item.chatAvatar}
                       />
-                      {/* Tên */}
                       <div className="ml-2 flex flex-col">
                         <div className="text-lg font-medium text-[#081c36]">
                           <span className="text-sm">{item.chatName}</span>
@@ -1374,7 +1298,6 @@ const Conversation = () => {
                   ))}
                 </div>
               </div>
-              {/* Danh sách những mục đã được chọn */}
               {selectedContactObjs.length > 0 && (
                 <div className="my-3 ml-3 mt-4 w-5/12 rounded-md border-2 pl-3 pt-3 transition-transform duration-300 ease-in-out">
                   <h2 className="text-sm font-semibold ">
@@ -1633,9 +1556,8 @@ const Conversation = () => {
                 <div className="bt-[6px] h-full w-full flex-1 px-4 pb-2 ">
                   <div className="flex w-full items-center">
                     <div
-                      className={`flex items-center ${
-                        true ? "border border-[#EAEDF0]" : "border"
-                      } m-2 h-[25px] w-full rounded-full bg-[#EAEDF0] p-[2px]`}
+                      className={`flex items-center ${true ? "border border-[#EAEDF0]" : "border"
+                        } m-2 h-[25px] w-full rounded-full bg-[#EAEDF0] p-[2px]`}
                     >
                       <FontAwesomeIcon
                         className="w-3 px-2"
@@ -1648,7 +1570,7 @@ const Conversation = () => {
                         // onBlur={handleBlurPhoneClick}
                         autoFocus
                         onChange={(event) => {
-                          handleSearchMessageInConservation(event.target.value);
+                          handleSearchMessageInConversation(event.target.value);
                         }}
                         className="w-full bg-[#EAEDF0] text-[14px] font-normal text-[##7988A1] focus:outline-none"
                         type="text"
@@ -1735,13 +1657,12 @@ const Conversation = () => {
             )}
             {/* -68 */}
             <div
-              className={`${
-                openCompReplyInput
-                  ? "h-[calc(100vh-250px)]"
-                  : openSearchMessage && messages.length < 8
-                    ? "h-[calc(100vh-176px)] pt-[90px]"
-                    : "h-[calc(100vh-176px)]"
-              }  w-full flex-1 overflow-auto bg-[#A4BEEB] p-4 pr-3 `}
+              className={`${openCompReplyInput
+                ? "h-[calc(100vh-250px)]"
+                : openSearchMessage && messages.length < 8
+                  ? "h-[calc(100vh-176px)] pt-[90px]"
+                  : "h-[calc(100vh-176px)]"
+                }  w-full flex-1 overflow-auto bg-[#A4BEEB] p-4 pr-3 `}
               // onScroll={handleScroll}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -1762,8 +1683,8 @@ const Conversation = () => {
                     message={message}
                     chatAvatar={chatAvatar}
                     chatName={chatName}
-                    socketFromConservation={socket}
-                    setSocketFromConservation={setSocket}
+                    socketFromConversation={socket}
+                    setSocketFromConversation={setSocket}
                     messagesF={messages}
                     setMessageDeletedID={setMessageDeletedID}
                     setMessageRecalledID={setMessageRecalledID}
@@ -1887,9 +1808,9 @@ const Conversation = () => {
                     <a href="#">
                       {/* prettier-ignore */}
                       <img src="/chatbar-screenshotz.png"
-                    alt=""
-                    className="h-[24px] w-[24px] opacity-65"
-                  />
+                        alt=""
+                        className="h-[24px] w-[24px] opacity-65"
+                      />
                     </a>
                   </div>
                   <div className="mr-2 flex w-10 items-center justify-center">
@@ -1913,14 +1834,13 @@ const Conversation = () => {
                 </div>
               </div>
               <div className={`h-${openCompReplyInput ? "120.5" : "58.5"}px`}>
-                {/* Thêm phần nhập tin nhắn ở đây */}
                 {/* <MessageInput
               onSendMessage={handleSendMessage}
               onKeySendMessage={handleKeyPress}
             /> */}
                 <div
                   className="flex w-full items-center bg-white"
-                  // style={{ height: "58.5px" }}
+                // style={{ height: "58.5px" }}
                 >
                   <div className="mb-0 w-full pb-0">
                     {openCompReplyInput && (
@@ -1949,7 +1869,7 @@ const Conversation = () => {
                                   &nbsp;
                                   <span className="text-[13px] font-semibold">
                                     {userIDReplyForCompReply ===
-                                    localStorage.getItem("userID")
+                                      localStorage.getItem("userID")
                                       ? localStorage.getItem("userName")
                                       : chatName}
                                   </span>
@@ -2028,9 +1948,8 @@ const Conversation = () => {
 
                   <div className="mb-4 flex justify-between border-b-8 border-[#EBEEEF] px-[34px]">
                     <button
-                      className={`flex-col items-center justify-center rounded-lg text-xs ${
-                        openNotification ? "text-gray-600" : "text-gray-800"
-                      } p-2 `}
+                      className={`flex-col items-center justify-center rounded-lg text-xs ${openNotification ? "text-gray-600" : "text-gray-800"
+                        } p-2 `}
                       onClick={handleClickNotification}
                     >
                       <div className="flex w-full items-center justify-center">
@@ -2053,10 +1972,9 @@ const Conversation = () => {
                       </div>
                     </button>
                     <button
-                      className={`flex-col items-center justify-center rounded-lg  text-xs ${
-                        true ? "text-gray-600" : "text-gray-400"
-                      } p-2 `}
-                      // onClick={toggleNotification}
+                      className={`flex-col items-center justify-center rounded-lg  text-xs ${true ? "text-gray-600" : "text-gray-400"
+                        } p-2 `}
+                    // onClick={toggleNotification}
                     >
                       <div className="flex w-full items-center justify-center">
                         <div className="flex h-8 w-8 items-center justify-center rounded-[50%] border bg-[#E7EAED] hover:bg-gray-300">
@@ -2074,10 +1992,9 @@ const Conversation = () => {
                       </div>
                     </button>
                     <button
-                      className={`flex-col items-center justify-center rounded-lg text-xs ${
-                        true ? "text-gray-600" : "text-gray-400"
-                      } p-2 `}
-                      // onClick={toggleNotification}
+                      className={`flex-col items-center justify-center rounded-lg text-xs ${true ? "text-gray-600" : "text-gray-400"
+                        } p-2 `}
+                    // onClick={toggleNotification}
                     >
                       <div className="flex w-full items-center justify-center">
                         <div className="flex h-8 w-8 items-center justify-center rounded-[50%] border bg-[#E7EAED] hover:bg-gray-300">

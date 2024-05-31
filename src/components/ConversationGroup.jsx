@@ -122,12 +122,9 @@ const ConversationGroup = () => {
   //     });
   // }
 
-  // Hàm xử lý khi chọn emoji từ picker
   const handleEmojiSelect = (emoji) => {
     console.log("Emoji selected:", emoji);
-    // Gửi emoji qua WebSocket
     sendMessageWithTextViaSocket(emoji, "emoji");
-    // Đóng picker emoji sau khi chọn
     setOpenPicker(false);
   };
 
@@ -150,12 +147,10 @@ const ConversationGroup = () => {
 
       console.log("File uploaded successfully. File URL:", fileUrl);
 
-      // Tạo key cho file upload
-      const fileExtension = file.name.split(".").pop(); // Lấy phần đuôi của file
-      const fileSizeKB = Math.round(file.size / 1024); // Kích thước file tính bằng KB
+      const fileExtension = file.name.split(".").pop();
+      const fileSizeKB = Math.round(file.size / 1024);
       const key = `${fileExtension}|${file.name}|${fileSizeKB}KB`;
 
-      // Gửi tin nhắn chứa link ảnh và key cho người nhận
       const imageMessage = {
         contents: [
           {
@@ -168,7 +163,6 @@ const ConversationGroup = () => {
       console.log("Image message:", imageMessage);
     } catch (error) {
       console.error("Error uploading file:", error);
-      // Xử lý lỗi ở đây
       throw error;
     }
   };
@@ -193,12 +187,10 @@ const ConversationGroup = () => {
   //       );
   //       setImageUrl(response.data.secure_url);
 
-  //       // Tạo key cho file upload
-  //       const fileExtension = file.name.split(".").pop(); // Lấy phần đuôi của file
-  //       const fileSizeKB = Math.round(file.size / 1024); // Kích thước file tính bằng KB
+  //       const fileExtension = file.name.split(".").pop();
+  //       const fileSizeKB = Math.round(file.size / 1024);
   //       const key = `${fileExtension}|${file.name}|${fileSizeKB}KB`;
 
-  //       // Gửi tin nhắn chứa link ảnh và key cho người nhận
   //       const imageMessage = {
   //         contents: [
   //           {
@@ -235,7 +227,6 @@ const ConversationGroup = () => {
         );
         setImageUrl(response.data.secure_url);
 
-        // Gửi tin nhắn chứa link ảnh và key cho người nhận
         const imageMessage = {
           contents: [
             {
@@ -270,14 +261,12 @@ const ConversationGroup = () => {
   //         response.data.secure_url,
   //       );
 
-  //       // Tạo tin nhắn chứa link ảnh theo định dạng mong muốn
   //       const imageMessage = {
   //         key: "image",
   //         value: response.data.secure_url,
   //       };
 
   //       console.log("Image message:", imageMessage);
-  //       // Gửi tin nhắn qua WebSocket
   //       sendMessageWithTextViaSocket(imageMessage, "image");
   //     })
   //     .catch((error) => {
@@ -285,7 +274,6 @@ const ConversationGroup = () => {
   //     });
   // };
 
-  // Hàm xử lý khi người dùng chọn ảnh
   const handleImageSelection = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -294,7 +282,6 @@ const ConversationGroup = () => {
     }
   };
 
-  // // Hàm xử lý khi người dùng chọn file
   // const handleFileChange = (event) => {
   //   const selectedFile = event.target.files[0];
   //   // console.log("Selected file:", selectedFile);
@@ -307,7 +294,6 @@ const ConversationGroup = () => {
     if (selectedFile) {
       // handleFileUpload(selectedFile);
       uploadFileToS3(selectedFile);
-      // Đặt loại nội dung là file
       setContentType("file");
     }
   };
@@ -332,10 +318,10 @@ const ConversationGroup = () => {
   const [messages, setMessages] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const [endIndex, setEndIndex] = useState(15);
-  const {cons, setCons, group, setGroup} = useUser();
+  const { cons, setCons, group, setGroup } = useUser();
 
   const [message, setMessage] = useState("");
-  const [contentType, setContentType] = useState("text"); // Mặc định là gửi tin nhắn text
+  const [contentType, setContentType] = useState("text");
   const [keyTypeMessage, setKeyTypeMessage] = useState("text");
   const [socket, setSocket] = useState(null);
   const [socketGroup, setSocketGroup] = useState(null);
@@ -347,9 +333,9 @@ const ConversationGroup = () => {
   const [loadAvt, setLoadAvt] = useState(chatAvatar);
 
   const [sentMessage, setSentMessage] = useState(null);
-  const [consGroup, setConsGroup] = useState(JSON.parse(localStorage.getItem("conversations")).find(item => item.chatID === id) );
+  const [consGroup, setConsGroup] = useState(JSON.parse(localStorage.getItem("conversations")).find(item => item.chatID === id));
   // const [group, setGroup] = useState(null);
-  const storedData  = JSON.parse(localStorage.getItem("conversations"));
+  const storedData = JSON.parse(localStorage.getItem("conversations"));
   const conversations = storedData ? storedData?.filter(conversation => conversation.type !== "GROUP") : null
 
   const [messageRecalledID, setMessageRecalledID] = useState(null);
@@ -396,12 +382,12 @@ const ConversationGroup = () => {
   const handleBlurPhoneClick = () => {
     setTFPhoneNumberClick(false);
   };
-  
 
-  useEffect(()=> {
+
+  useEffect(() => {
     fetchGroup()
     // console.log(group);
-  },[])
+  }, [])
 
 
   const handleInputChange = (e) => {
@@ -410,12 +396,11 @@ const ConversationGroup = () => {
   };
   console.log("Message:", message);
 
-  // Hàm gửi tin nhắn qua WebSocket với nội dung là text từ input
   // const handleSendMessage = () => {
   //   if (message.trim() !== "") {
   //     console.log("Gửi tin nhắn:", message);
   //     sendMessageWithTextViaSocket(message);
-  //     setMessage(""); // Xóa nội dung của input message sau khi gửi
+  //     setMessage("");
   //   }
   // };
 
@@ -426,8 +411,6 @@ const ConversationGroup = () => {
   };
 
   // const handleSendMessage = (newMessage) => {
-  //   // Xử lý logic gửi tin nhắn, có thể thêm tin nhắn mới vào danh sách messages
-  //   // hoặc sử dụng một hàm callback để truyền tin nhắn lên component cha.
   //   console.log("Gửi tin nhắn:", newMessage);
   // };
 
@@ -442,6 +425,21 @@ const ConversationGroup = () => {
           },
         },
       );
+      if (response.status === 401) {
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       // console.log("Data:", response.data);
       return response.data;
     } catch (error) {
@@ -455,17 +453,15 @@ const ConversationGroup = () => {
     // Lấy userID từ cookies
     const userIDFromCookie = cookies.get("userID");
 
-    // Nếu có userID từ cookies, giải mã và trả về
     if (userIDFromCookie) {
       // const userIDDecrypted = decryptData(userIDFromCookie);
       return userIDFromCookie;
     }
 
-    // Nếu không có userID từ cookies, trả về null
     return null;
   };
 
-  const fetchGroup = async() => {
+  const fetchGroup = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_HOST}/api/v1/group/info?idGroup=${id}`,
@@ -476,6 +472,21 @@ const ConversationGroup = () => {
           },
         },
       );
+      if (response.status === 401) {
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       console.log("Data:", response.data);
       setGroup(response.data)
       return response.data;
@@ -486,13 +497,11 @@ const ConversationGroup = () => {
   }
 
   useEffect(() => {
-    // Gán giá trị lấy được từ cookies vào state userIDFromCookies
     const userID = getUserIDFromCookie();
     setUserIDFromCookies(userID);
-    // Lấy token từ cookies và giải mã nó
     const tokenFromCookie = cookies.get("token");
     const tokenFromLocalStore = localStorage.getItem("token");
-    
+
     if (tokenFromCookie) {
       setTokenFromCookies(tokenFromCookie)
     }
@@ -553,7 +562,7 @@ const ConversationGroup = () => {
   //       ],
   //     };
   //     socket.send(JSON.stringify(message));
-  //     setMessage(""); // Xóa nội dung của input message sau khi gửi
+  //     setMessage("");
   //   } else {
   //     console.error("WebSocket is not initialized.");
   //   }
@@ -573,18 +582,16 @@ const ConversationGroup = () => {
         contents: [],
       };
 
-      // Thêm nội dung tương ứng vào tin nhắn
       if (contentType === "text") {
         message.contents.push({
           key: "text",
           value: messageContent,
         });
       } else if (contentType === "file") {
-        // Lấy phần tử đầu tiên trong mảng contents
         const fileContent = messageContent.contents[0];
         message.contents.push({
           key: fileContent.key,
-          value: fileContent.value, // Đây là đường dẫn URL của file
+          value: fileContent.value,
         });
       } else if (contentType === "emoji") {
         message.contents.push({
@@ -604,8 +611,8 @@ const ConversationGroup = () => {
       }
       socket.send(JSON.stringify(message));
       console.log(message);
-      setMessage(""); // Xóa nội dung của input message sau khi gửi
-      setSentMessage(message); // Cập nhật state của sentMessage
+      setMessage("");
+      setSentMessage(message);
     } else {
       console.error("WebSocket is not initialized.");
     }
@@ -615,7 +622,7 @@ const ConversationGroup = () => {
   //   if (message.trim() !== "") {
   //     console.log("Gửi tin nhắn:", message);
   //     sendMessageWithTextViaSocket(message);
-  //     setMessage(""); // Xóa nội dung của input message sau khi gửi
+  //     setMessage("");
   //   }
   // };
 
@@ -633,7 +640,7 @@ const ConversationGroup = () => {
       console.log("Gửi notify:");
       sendMessageWithTextViaSocket(message, "notify");
     }
-    
+
   };
 
   const loadMoreMessages = async () => {
@@ -690,53 +697,6 @@ const ConversationGroup = () => {
     }
   }
 
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.onmessage = (event) => {
-  //       const data = event.data;
-  //       // console.log("Received data:", data);
-  //       try {
-  //         const jsonData = JSON.parse(data);
-  //         console.log("Received JSON data:", jsonData);
-  //         // Kiểm tra xem tin nhắn không phải từ bạn
-  //         if (jsonData.tcm === "TCM01") {
-  //           const messageFromOtherUser = jsonData.userID !== userIDFromCookies;
-  //           if (messageFromOtherUser) {
-  //             // Kiểm tra xem tin nhắn đã tồn tại trong mảng messages chưa
-  //             const messageExists = messages.some(
-  //               (msg) => msg.id === jsonData.id,
-  //             );
-
-  //             if (!messageExists) {
-  //               setMessages((prevMessages) => [...prevMessages, jsonData]);
-  //               console.log(messages);
-  //             }
-  //           }
-  //         }
-
-  //         // const messageFromOtherUser = jsonData.userID !== userIDFromCookies;
-  //         // if (messageFromOtherUser) {
-  //         //   // Kiểm tra xem tin nhắn đã tồn tại trong mảng messages chưa
-  //         //   const messageExists = messages.some(
-  //         //     (msg) => msg.id === jsonData.id,
-  //         //   );
-  //           // if (!messageExists) {
-  //           //   setMessages((prevMessages) => [...prevMessages, jsonData]);
-  //           //   console.log(messages);
-  //           // }
-  //         // }
-  //       } catch (error) {
-  //         console.error("Error parsing JSON data:", error);
-  //       }
-  //     };
-
-  //     // Ensure that the socket is closed when the component unmounts
-  //     return () => {
-  //       socket.onmessage = null;
-  //     };
-  //   }
-  // }, [socket, messages, userIDFromCookies]);
-
 
   useEffect(() => {
     if (socket) {
@@ -759,12 +719,15 @@ const ConversationGroup = () => {
               console.log("Message____________________:", messages);
               setIdA(jsonData.id);
               if (jsonData) {
-                // Kiểm tra xem tin nhắn đã tồn tại trong mảng messages chưa
                 const messageExists = messages.some(
                   (msg) => msg.id === jsonData.id,
                 );
                 if (!messageExists) {
-                  setMessages((prevMessages) => [...prevMessages, jsonData]);
+                  if (messages?.length > 0) {
+                    setMessages((prevMessages) => [...prevMessages, jsonData]);
+                  } else {
+                    setMessages([sentMessage]);
+                  }
                 }
               }
             }
@@ -776,13 +739,12 @@ const ConversationGroup = () => {
                   msg.messageID === messageIDToRecall ||
                   msg.id === messageIDToRecall
                 ) {
-                  // Thay đổi nội dung của tin nhắn thành "Tin nhắn đã được thu hồi"
                   return {
                     ...msg,
                     contents: [
                       { key: "text", value: "Tin nhắn đã được thu hồi" },
                     ],
-                    recall: true, // Có thể đánh dấu tin nhắn này đã được thu hồi
+                    recall: true,
                   };
                 }
                 return msg;
@@ -795,7 +757,7 @@ const ConversationGroup = () => {
               jsonData.typeNotify === "SUCCESS"
             ) {
               const messageIDToDelete = messageDeletedID;
-              // Lọc ra các tin nhắn mà không có messageIDToDelete
+
               const updatedMessages = messages?.filter(
                 (msg) => msg.messageID !== messageIDToDelete,
               );
@@ -822,7 +784,6 @@ const ConversationGroup = () => {
     messageRecalledID,
   ]);
 
-  // Hàm cuộn xuống dưới cùng của khung chat
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -830,13 +791,17 @@ const ConversationGroup = () => {
   };
   useEffect(() => {
     scrollToBottom();
-  }, [messages]); // Cuộn xuống dưới cùng mỗi khi danh sách tin nhắn thay đổi
+  }, [messages]);
 
   useEffect(() => {
     if (sentMessage) {
       scrollToBottom();
-      setMessages((prevMessages) => [...prevMessages, sentMessage]);
-      setSentMessage(null); // Đặt lại giá trị của sentMessage về null sau khi cập nhật tin nhắn
+      if (messages?.length > 0) {
+        setMessages((prevMessages) => [...prevMessages, sentMessage]);
+      } else {
+        setMessages([sentMessage]);
+      }
+      setSentMessage(null);
     }
   }, [sentMessage]);
 
@@ -895,7 +860,7 @@ const ConversationGroup = () => {
   const handleAddMemberToGroup = () => {
     let mem = getSelectedItems();
     // console.log(mem);
-    mem?.map(item=> {
+    mem?.map(item => {
       if (socketGroup && socket) {
         let addMem = {
           id: uuidv4(),
@@ -905,7 +870,7 @@ const ConversationGroup = () => {
           userName: item.chatName,
           userAvatar: item.chatAvatar,
         };
-  
+
         socketGroup.send(JSON.stringify(addMem));
         sendMessageWithTextViaSocket(item.chatName + " đã được thêm vào nhóm", "notify");
         // console.log(create);
@@ -915,7 +880,7 @@ const ConversationGroup = () => {
         console.error("WebSocket is not initialized.");
       }
     })
-    
+
     togglePopup();
     fetchGroup();
     reloadCons();
@@ -940,7 +905,7 @@ const ConversationGroup = () => {
       socketGroup.send(JSON.stringify(setAd));
       fetchGroup();
       // reloadCons();
-      
+
     } else {
       console.error("WebSocket is not initialized.");
     }
@@ -960,7 +925,7 @@ const ConversationGroup = () => {
 
       socketGroup.send(JSON.stringify(rmAdmin));
       // console.log(create);
-      
+
       fetchGroup();
       // reloadCons();
     } else {
@@ -987,7 +952,7 @@ const ConversationGroup = () => {
       socketGroup.send(JSON.stringify(changeAd));
       fetchGroup();
       reloadCons();
-      
+
     } else {
       console.error("WebSocket is not initialized.");
     }
@@ -1013,7 +978,7 @@ const ConversationGroup = () => {
 
       socketGroup.send(JSON.stringify(outGroup));
       // console.log(create);
-      
+
       fetchGroup();
       reloadCons();
     } else {
@@ -1034,6 +999,21 @@ const ConversationGroup = () => {
           method: "GET",
         },
       );
+      if (response.status === 401) {
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
+        throw new Error("Unauthorized");
+      }
       if (!response.ok) {
         throw new Error("Failed to fetch conversations");
       }
@@ -1071,8 +1051,8 @@ const ConversationGroup = () => {
           body: formData,
         },
       )
-      .then(response=>response.json())
-      .then(data=>newAvatar=data.secure_url);
+        .then(response => response.json())
+        .then(data => newAvatar = data.secure_url);
 
       console.log(newAvatar);
       setLoadAvt(newAvatar)
@@ -1085,7 +1065,7 @@ const ConversationGroup = () => {
           idChat: id,
           avatar: newAvatar
         };
-  
+
         socketGroup.send(JSON.stringify(updateImageChatGroup));
         // console.log(create);
         reloadCons();
@@ -1093,10 +1073,10 @@ const ConversationGroup = () => {
         console.error("WebSocket is not initialized.");
       }
 
-      
+
 
       // socketGroup.send
-      
+
     } catch (error) {
       console.error('Error uploading avatar:', error);
     }
@@ -1157,8 +1137,8 @@ const ConversationGroup = () => {
               <a href="" className="p-2">
                 <img src="/video.png" alt="" className="m-1 h-5 w-5" />
               </a>
-              
-              <img onClick={handleClickRightBar} src="/right-bar.png" alt="" className="m-1 h-4 w-4"/>
+
+              <img onClick={handleClickRightBar} src="/right-bar.png" alt="" className="m-1 h-4 w-4" />
 
             </div>
           </div>
@@ -1166,7 +1146,7 @@ const ConversationGroup = () => {
         {/* -68 */}
         <div
           className="h-[calc(100vh-174px)] w-full flex-1 overflow-auto bg-[#A4BEEB] p-4 pr-3"
-          // onScroll={handleScroll}
+        // onScroll={handleScroll}
         >
           {/* <Message sender="other" content="Xin chào!" timestamp="15:30" />
           <Message sender="me" content="Chào bạn!" timestamp="15:32" />
@@ -1176,8 +1156,8 @@ const ConversationGroup = () => {
               key={index}
               message={message}
               chatAvatar={message.userAvatar}
-              socketFromConservation={socket}
-              setSocketFromConservation={setSocket}
+              socketFromConversation={socket}
+              setSocketFromConversation={setSocket}
               messagesF={messages}
               setMessageDeletedID={setMessageDeletedID}
               setMessageRecalledID={setMessageRecalledID}
@@ -1339,31 +1319,31 @@ const ConversationGroup = () => {
 
 
 
-      {click && <div className="w-[500px]"> 
+      {click && <div className="w-[500px]">
         <div className="flex flex-col items-center h-screen">
-          
-          <div className="h-[68px] w-full flex items-center justify-center text-center border"> 
+
+          <div className="h-[68px] w-full flex items-center justify-center text-center border">
             <h1 className="font-semibold text-lg p-3 m-2">Thông tin nhóm</h1>
           </div>
 
           <div className="flex flex-col justify-end h-full bg-white ">
             <div className="flex justify-center items-center my-4">
-              <input ref={inputFileRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }}/>
+              <input ref={inputFileRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
               <img onClick={handleAvatarClick} src={loadAvt} alt="ZaloLite Logo" className="w-12 h-12 mr-2 rounded-full" />
               <h1 className="text-xl font-bold">{chatName}</h1>
             </div>
             <div className="flex justify-between mb-4 border-b-4 border-gray-200">
               <button disabled="true" className="flex-col items-center text-xs px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faBell}/> <br/>Tắt thông báo
+                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faBell} /> <br />Tắt thông báo
               </button>
               <button disabled="true" className="flex-col items-center text-xs px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faThumbtack}/> <br/>Ghim hội thoại
+                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faThumbtack} /> <br />Ghim hội thoại
               </button>
               <button onClick={togglePopup} className="flex-col items-center text-xs px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faUserPlus}/> <br/>Thêm thành viên
+                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faUserPlus} /> <br />Thêm thành viên
               </button>
               <button disabled="true" className="flex-col items-center text-xs px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faGear}/> <br/>Quản lý nhóm
+                <FontAwesomeIcon className="w-5 h-5 rounded-full" icon={faGear} /> <br />Quản lý nhóm
               </button>
             </div>
 
@@ -1387,22 +1367,22 @@ const ConversationGroup = () => {
                         <input onFocus={handleFocusNameGroup} onBlur={handleBlurNameGroup} onChange={(event) => {setNameGroup(event.target.value);}} className={`w-full mx-3 focus:outline-none ${nameGroupClick?'border-b border-b-blue-600':'border-b'} p-2`} type="text" placeholder="Nhập tên nhóm..."/>
                       </div> */}
 
-                      <div className={`flex items-center ${tfPhoneNumberClick?'border border-blue-600':'border'} rounded-full p-2 m-2`}>
+                      <div className={`flex items-center ${tfPhoneNumberClick ? 'border border-blue-600' : 'border'} rounded-full p-2 m-2`}>
                         <FontAwesomeIcon className="px-2" icon={faMagnifyingGlass} />
-                        <input onFocus={handleFocusPhoneClick} onBlur={handleBlurPhoneClick} onChange={(event) => {setTFPhoneNumber(event.target.value);}}  className="w-full focus:outline-none font-normal text-sm" type="text" placeholder="Nhập tên, số điện thoại, hoặc danh sách số điện thoại"/>
+                        <input onFocus={handleFocusPhoneClick} onBlur={handleBlurPhoneClick} onChange={(event) => { setTFPhoneNumber(event.target.value); }} className="w-full focus:outline-none font-normal text-sm" type="text" placeholder="Nhập tên, số điện thoại, hoặc danh sách số điện thoại" />
                       </div>
-                      
+
                     </div>
 
                     <div className="h-[calc(65vh-70px)] w-full overflow-auto">
                       <h6 className="p-2 text-sm font-semibold">Danh sách bạn bè</h6>
 
                       <ul>
-                        {conversations?conversations?.map((conversation) => {
+                        {conversations ? conversations?.map((conversation) => {
                           // console.log("lò"+group.members);
                           if (!((group.owner.userID === conversation.id_UserOrGroup)
-                          || (group.admin.some(item => item["userID"] === conversation.id_UserOrGroup)) || (group.members.some(item => item["userID"] === conversation.id_UserOrGroup)))) {
-                            
+                            || (group.admin.some(item => item["userID"] === conversation.id_UserOrGroup)) || (group.members.some(item => item["userID"] === conversation.id_UserOrGroup)))) {
+
                             return (
                               <li
                                 key={conversation.chatID}
@@ -1413,20 +1393,20 @@ const ConversationGroup = () => {
                                   type="checkbox"
                                   className="form-checkbox h-4 w-4 mr-2"
                                   checked={selectedOptions.includes(conversation.chatID)}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <img src={conversation.chatAvatar} alt={conversation.chatName} className="h-8 w-8 rounded-full mr-2" />
                                 <span>{conversation.chatName}</span>
                               </li>
                             )
                           }
-                        }):null}
+                        }) : null}
                       </ul>
 
 
 
                     </div>
-                  
+
                     <button
                       onClick={handleAddMemberToGroup}
                       variant="contained"
@@ -1434,7 +1414,7 @@ const ConversationGroup = () => {
                     >
                       Thêm thành viên
                     </button>
-                  
+
                   </div>
                 </div>
               )}
@@ -1443,21 +1423,21 @@ const ConversationGroup = () => {
 
             <div className="mb-4 flex-auto border-b-4 border-gray-200 px-4">
               <h2 className="text-lg font-semibold mb-2">Thành viên nhóm</h2>
-              <p className="text-gray-600"><FontAwesomeIcon icon={faUsers} /> {group.members.length+1} thành viên</p>
+              <p className="text-gray-600"><FontAwesomeIcon icon={faUsers} /> {group.members.length + 1} thành viên</p>
 
               <div className="h-[320px] w-full overflow-auto">
                 {/* <h6 className="p-2 text-sm font-semibold">Danh sách bạn bè</h6> */}
                 <ul>
-                    <li
-                      key={group.owner.userID}
-                      className="flex items-center px-4 py-3"
-                      // onClick={() => handleOptionToggle(conversation.chatID)}
-                    >
-                      <img src={group.owner.userAvatar} alt={group.owner.userName} className="h-8 w-8 rounded-full mr-2" />
-                      <span>{group.owner.userName}   (Quản lý)</span>
-                    </li>
+                  <li
+                    key={group.owner.userID}
+                    className="flex items-center px-4 py-3"
+                  // onClick={() => handleOptionToggle(conversation.chatID)}
+                  >
+                    <img src={group.owner.userAvatar} alt={group.owner.userName} className="h-8 w-8 rounded-full mr-2" />
+                    <span>{group.owner.userName}   (Quản lý)</span>
+                  </li>
 
-                    {/* {group.admin == null && <li
+                  {/* {group.admin === null && <li
                       key={group.admin.userID}
                       className="flex items-center px-4 py-3"
                       // onClick={() => handleOptionToggle(conversation.chatID)}
@@ -1465,18 +1445,18 @@ const ConversationGroup = () => {
                       <img src={group.admin.userAvatar} alt={group.admin.userName} className="h-8 w-8 rounded-full mr-2" />
                       <span>{group.admin.userName}   (Phó nhóm)</span>
                     </li>} */}
-                  { group.admin?.map((admin) => (
+                  {group.admin?.map((admin) => (
                     <li
-                    key={admin.userID}
-                    className="flex items-center px-4 py-3"
+                      key={admin.userID}
+                      className="flex items-center px-4 py-3"
                     // onClick={() => handleOptionToggle(conversation.chatID)}
-                  >
+                    >
                       <img src={admin.userAvatar} alt={admin.userName} className="h-8 w-8 rounded-full mr-2" />
                       <span>{admin.userName}   (Phó nhóm)</span>
-                      {group.owner.userID==localStorage.getItem("userID") && 
+                      {group.owner.userID === localStorage.getItem("userID") &&
                         <div className="ml-auto">
                           {/* <button onClick={()=> {setAdmin(member)}} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faScrewdriverWrench}/></button> */}
-                          <button onClick={()=> {removeAdmin(admin)}} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faUserXmark} /></button>
+                          <button onClick={() => { removeAdmin(admin) }} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faUserXmark} /></button>
                         </div>
                       }
                     </li>
@@ -1487,14 +1467,14 @@ const ConversationGroup = () => {
                     <li
                       key={member.userID}
                       className="flex items-center px-4 py-3"
-                      // onClick={() => handleOptionToggle(conversation.chatID)}
+                    // onClick={() => handleOptionToggle(conversation.chatID)}
                     >
                       <img src={member.userAvatar} alt={member.userName} className="h-8 w-8 rounded-full mr-2" />
-                      <span>{member.userName}</span> {(group.owner.userID==localStorage.getItem("userID")) && 
+                      <span>{member.userName}</span> {(group.owner.userID === localStorage.getItem("userID")) &&
                         <div className="ml-auto">
-                          <button onClick={()=> {changeAdmin(member)}} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faUserGear} /></button>
-                          <button onClick={()=> {setAdmin(member)}} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faScrewdriverWrench}/></button>
-                          <button onClick={()=> {deleteMember(member)}} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faUserMinus} /></button>
+                          <button onClick={() => { changeAdmin(member) }} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faUserGear} /></button>
+                          <button onClick={() => { setAdmin(member) }} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faScrewdriverWrench} /></button>
+                          <button onClick={() => { deleteMember(member) }} className=" hover:bg-gray-200 px-2"><FontAwesomeIcon icon={faUserMinus} /></button>
                         </div>
                       }
                     </li>
@@ -1507,15 +1487,15 @@ const ConversationGroup = () => {
 
             <div className="justify-items-end px-4">
               <button className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="mr-2" icon={faTrashCan}/> Xóa lịch sử cuộc trò chuyện
+                <FontAwesomeIcon className="mr-2" icon={faTrashCan} /> Xóa lịch sử cuộc trò chuyện
               </button>
 
-              {(group.owner.userID==localStorage.getItem("userID") || group.admin.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleDeleteGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="mr-2" icon={faArrowRightFromBracket}/> Giải tán nhóm
+              {(group.owner.userID === localStorage.getItem("userID") || group.admin.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleDeleteGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
+                <FontAwesomeIcon className="mr-2" icon={faArrowRightFromBracket} /> Giải tán nhóm
               </button>}
 
-              {!(group.owner.userID==localStorage.getItem("userID") || group.admin.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleOutGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
-                <FontAwesomeIcon className="mr-2" icon={faArrowRightFromBracket}/> Rời nhóm
+              {!(group.owner.userID === localStorage.getItem("userID") || group.admin.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleOutGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
+                <FontAwesomeIcon className="mr-2" icon={faArrowRightFromBracket} /> Rời nhóm
               </button>}
             </div>
 

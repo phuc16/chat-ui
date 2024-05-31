@@ -30,8 +30,8 @@ const MessageDetail = ({
   message,
   chatAvatar,
   chatName,
-  socketFromConservation,
-  setSocketFromConservation,
+  socketFromConversation,
+  setSocketFromConversation,
   setMessageDeletedID,
   setMessageRecalledID,
   idA,
@@ -44,7 +44,7 @@ const MessageDetail = ({
   const cookies = new Cookies();
   const [userIDFromCookies, setUserIDFromCookies] = useState("");
   const { userID, contents, timestamp, hasEmotion } = message;
-  const [socket, setSocket] = useState(socketFromConservation);
+  const [socket, setSocket] = useState(socketFromConversation);
   const { cons, setCons } = useUser();
 
   const [isRecalled, setIsRecalled] = useState(false);
@@ -103,7 +103,7 @@ const MessageDetail = ({
     // Replace this line with your WebSocket send function
     console.log("Sending hidden message:", hiddenMessage);
     socket.send(JSON.stringify(hiddenMessage));
-    setSocketFromConservation(socket);
+    setSocketFromConversation(socket);
   };
 
   const handleHidenMessage = (messageID) => {
@@ -124,7 +124,7 @@ const MessageDetail = ({
           Tin nhắn đã được thu hồi
         </div>
       );
-    } else if (contents && contents.length == 1) {
+    } else if (contents && contents.length === 1) {
       return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
@@ -145,9 +145,8 @@ const MessageDetail = ({
           return (
             <p
               key={index}
-              className={`text-[#081c36] ${
-                userID !== userIDFromCookies ? "" : ""
-              }`}
+              className={`text-[#081c36] ${userID !== userIDFromCookies ? "" : ""
+                }`}
             >
               {content.value}
             </p>
@@ -187,7 +186,7 @@ const MessageDetail = ({
         }
         // return null;
       });
-    } else if (contents && contents.length == 2) {
+    } else if (contents && contents.length === 2) {
       return contents?.map((content, index) => {
         if (content.key === "image") {
           return (
@@ -251,7 +250,7 @@ const MessageDetail = ({
     setIsHovered(true);
   };
 
-  const renderImageInForwadMsg = (contents) => {
+  const renderImageInForwardMsg = (contents) => {
     if (contents && contents.length > 0) {
       return contents?.map((content, index) => {
         if (content.key === "image") {
@@ -275,8 +274,7 @@ const MessageDetail = ({
     if (message.userID === userIDFromCookies) {
       setOwnerMessage(localStorage.getItem("userName"));
     } else {
-      // console.log("message.parentID", message.parentID);
-      if (message.parentID != null) {
+      if (message.parentID !== null) {
         console.log(message)
         const fetchInfoAccount = async () => {
           const response = await fetch(
@@ -289,10 +287,25 @@ const MessageDetail = ({
               },
             },
           );
+          if (response.status === 401) {
+            const allCookies = cookies.getAll();
+            for (const cookieName in allCookies) {
+              if (allCookies.hasOwnProperty(cookieName)) {
+                cookies.remove(cookieName, {
+                  path: "/",
+                });
+                cookies.remove(cookieName, {
+                  path: "/auth",
+                });
+              }
+            }
+            localStorage.clear();
+            throw new Error("Unauthorized");
+          }
           const data = await response.json();
           setOwnerMessage(data.userName);
         };
-        fetchInfoAccount();
+        // fetchInfoAccount();
       }
     }
   };
@@ -312,9 +325,8 @@ const MessageDetail = ({
     <div
       ref={messageRef}
       id={message.messageID}
-      className={`relative mb-3 flex border ${isHovered ? "group" : ""} ${
-        userID === userIDFromCookies ? "justify-end" : "justify-start"
-      }`}
+      className={`relative mb-3 flex ${isHovered ? "group border" : ""} ${userID === userIDFromCookies ? "justify-end" : "justify-start"
+        }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onContextMenu={handleContextMenu}
@@ -432,43 +444,41 @@ const MessageDetail = ({
               {message.contents[0].key === "image" &&
                 message.contents.length > 1 && <div className="h-[40px]"></div>}
               {message.contents[0].key === "image" &&
-                message.contents.length == 1 && (
+                message.contents.length === 1 && (
                   <div className="h-[40px]"></div>
                 )}
             </div>
           ) : // <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg p-1 px-2"></div>
-          null}
+            null}
         </div>
       )}
 
       {/* Content Hiển thị tin nhắn HuyDev */}
       {message &&
-      message.hidden &&
-      message.hidden.includes(localStorage.getItem("userID")) ? null : (
+        message.hidden &&
+        message.hidden.includes(localStorage.getItem("userID")) ? null : (
         <>
           {userID !== userIDFromCookies && (
             <Avatar src={chatAvatar} alt="Avatar" className="mr-3" />
           )}
           <div
-            className={`${
-              userID === userIDFromCookies ? "bg-[#E5EFFF]" : "bg-[#FFFFFF]"
-            } ${
-              message.contents[0].key === "image" &&
-              message.recall === true &&
-              userID === userIDFromCookies
+            className={`${userID === userIDFromCookies ? "bg-[#E5EFFF]" : "bg-[#FFFFFF]"
+              } ${message.contents[0].key === "image" &&
+                message.recall === true &&
+                userID === userIDFromCookies
                 ? "bg-[#E5EFFF]"
                 : message.contents[0].key === "image" &&
-                    message.recall === false
+                  message.recall === false
                   ? "max-w-[500px] bg-[rgb(164,190,235)]"
                   : "bg-[#E5EFFF]"
-            } relative flex max-w-screen-sm flex-col items-start rounded-md p-3 transition-all duration-300`}
+              } relative flex max-w-screen-sm flex-col items-start rounded-md p-3 transition-all duration-300`}
           >
             <div className="flex-1 items-center">
               {message.parentID && message.parentID.contents ? (
                 <div className="mb-2 bg-[#CCDFFC] py-[10px] pl-3 pr-[9px]">
                   <div className="flex w-full border-l-2 border-[#4F87F7] pl-3">
                     <div className="h-9">
-                      {renderImageInForwadMsg(message.parentID.contents)}
+                      {renderImageInForwardMsg(message.parentID.contents)}
                     </div>
                     <div className="h-full w-full flex-1 pl-1">
                       <div className="flex w-full items-center text-xs">
@@ -504,12 +514,11 @@ const MessageDetail = ({
                   Tin nhắn đã được thu hồi
                 </div>
               ) : message.contents[0].key === "image" &&
-                message.contents.length == 2 ? (
+                message.contents.length === 2 ? (
                 <>
                   <div
-                    className={`${message.parentID ? "mt-2" : ""} ${
-                      userID !== userIDFromCookies ? "-ml-6" : ""
-                    } ${userID === userIDFromCookies ? "-mr-3" : ""} flex`}
+                    className={`${message.parentID ? "mt-2" : ""} ${userID !== userIDFromCookies ? "-ml-6" : ""
+                      } ${userID === userIDFromCookies ? "-mr-3" : ""} flex`}
                   >
                     {renderContent()}
                   </div>
@@ -518,24 +527,20 @@ const MessageDetail = ({
                 message.contents.length > 1 ? (
                 <>
                   <div
-                    className={`${
-                      message.parentID ? "mt-2" : ""
-                    } -mr-3 flex flex-wrap ${
-                      userID !== userIDFromCookies ? "-ml-5" : ""
-                    }`}
+                    className={`${message.parentID ? "mt-2" : ""
+                      } -mr-3 flex flex-wrap ${userID !== userIDFromCookies ? "-ml-5" : ""
+                      }`}
                   >
                     {renderContent()}
                   </div>
                 </>
               ) : message.contents[0].key === "image" &&
-                message.contents.length == 1 ? (
+                message.contents.length === 1 ? (
                 <>
                   <div
-                    className={`${
-                      message.parentID ? "mt-2" : ""
-                    }  flex flex-wrap ${
-                      userID !== userIDFromCookies ? "-ml-3" : ""
-                    }`}
+                    className={`${message.parentID ? "mt-2" : ""
+                      }  flex flex-wrap ${userID !== userIDFromCookies ? "-ml-3" : ""
+                      }`}
                   >
                     {renderContent()}
                   </div>
@@ -543,9 +548,8 @@ const MessageDetail = ({
               ) : (
                 <>
                   <div
-                    className={`${message.parentID ? "mt-2" : ""} ${
-                      userID !== userIDFromCookies ? "" : ""
-                    }`}
+                    className={`${message.parentID ? "mt-2" : ""} ${userID !== userIDFromCookies ? "" : ""
+                      }`}
                   >
                     {renderContent()}
                   </div>
@@ -554,23 +558,21 @@ const MessageDetail = ({
             </div>
             {userID !== userIDFromCookies ? (
               <span
-                className={`mt-3 text-xs text-gray-500 ${
-                  message.contents[0].key === "image" &&
-                  message.recall === false
+                className={`mt-3 text-xs text-gray-500 ${message.contents[0].key === "image" &&
+                    message.recall === false
                     ? "-mr-3 mt-[4px] rounded-lg bg-slate-400 px-2 py-1 text-white"
                     : ""
-                }`}
+                  }`}
               >
                 {formattedTime(timestamp)}
               </span>
             ) : (
               <span
-                className={`mt-3 text-xs text-gray-500 ${
-                  message.contents[0].key === "image" &&
-                  message.recall === false
+                className={`mt-3 text-xs text-gray-500 ${message.contents[0].key === "image" &&
+                    message.recall === false
                     ? "-mr-3 ml-auto mt-[4px] rounded-lg bg-slate-400 px-2 py-1 text-white"
                     : ""
-                }`}
+                  }`}
               >
                 {formattedTime(timestamp)}
               </span>
@@ -593,11 +595,11 @@ const MessageDetail = ({
       {userID !== userIDFromCookies && (
         <div className="flex w-[155px] items-end">
           {isHovered &&
-          !(
-            message &&
-            message.hidden &&
-            message.hidden.includes(localStorage.getItem("userID"))
-          ) ? (
+            !(
+              message &&
+              message.hidden &&
+              message.hidden.includes(localStorage.getItem("userID"))
+            ) ? (
             <div>
               <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg bg-[#DDDBDB] p-1 px-2">
                 <div
@@ -689,12 +691,12 @@ const MessageDetail = ({
               {message.contents[0].key === "image" &&
                 message.contents.length > 1 && <div className="h-[40px]"></div>}
               {message.contents[0].key === "image" &&
-                message.contents.length == 1 && (
+                message.contents.length === 1 && (
                   <div className="h-[40px]"></div>
                 )}
             </div>
           ) : // <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg p-1 px-2"></div>
-          null}
+            null}
         </div>
       )}
     </div>

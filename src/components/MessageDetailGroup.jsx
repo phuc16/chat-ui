@@ -17,8 +17,8 @@ import { Box, Modal, Typography } from "@mui/material";
 const MessageDetailGroup = ({
   message,
   chatAvatar,
-  socketFromConservation,
-  setSocketFromConservation,
+  socketFromConversation,
+  setSocketFromConversation,
   setMessageDeletedID,
   setMessageRecalledID,
   idA
@@ -27,7 +27,7 @@ const MessageDetailGroup = ({
   const cookies = new Cookies();
   const [userIDFromCookies, setUserIDFromCookies] = useState("");
   const { userID, contents, timestamp, hasEmotion } = message;
-  const [socket, setSocket] = useState(socketFromConservation);
+  const [socket, setSocket] = useState(socketFromConversation);
   const {cons, setCons } = useUser();
 
   const [isRecalled, setIsRecalled] = useState(false);
@@ -84,7 +84,7 @@ const MessageDetailGroup = ({
     // Replace this line with your WebSocket send function
     console.log("Sending hidden message:", hiddenMessage);
     socket.send(JSON.stringify(hiddenMessage));
-    setSocketFromConservation(socket);
+    setSocketFromConversation(socket);
   };
 
   const handleHidenMessage = (messageID) => {
@@ -215,7 +215,7 @@ const MessageDetailGroup = ({
   return (
     <div
       ref={messageRef}
-      className={`relative mb-3 flex ${isHovered ? "group" : ""} ${
+      className={`relative mb-3 flex ${isHovered ? "group border" : ""} ${
         userID === userIDFromCookies ? "justify-end" : "justify-start"
       }`}
       onMouseEnter={handleMouseEnter}
@@ -279,7 +279,7 @@ const MessageDetailGroup = ({
                           alt="User Avatar"
                         />
                         <div>
-                          <h3 className="font-bold">Nguyễn Văn Sơn</h3>
+                          <h3 className="font-bold">{message.userName}</h3>
                           <p className="text-gray-500 text-sm">{formatDate(message.timestamp)}</p>
                         </div>
                       </div>
@@ -411,7 +411,7 @@ const MessageDetailGroup = ({
                           alt="User Avatar"
                         />
                         <div>
-                          <h3 className="font-bold">Nguyễn Văn Sơn</h3>
+                          <h3 className="font-bold">{message.userName}</h3>
                           <p className="text-gray-500 text-sm">{formatDate(message.timestamp)}</p>
                         </div>
                       </div>

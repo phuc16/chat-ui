@@ -35,6 +35,7 @@ import RegisterUser from "../pages/Login/RegisterUser";
 
 
 import ProtectedRoute from "../components/ProtectedRoute";
+import UnprotectedRoute from "../components/UnprotectedRoute";
 
 const Loadable = (Component) => (props) => {
   return (
@@ -47,35 +48,24 @@ const Loadable = (Component) => (props) => {
 export default function Router() {
   const [comp, setComp] = useState(<Conversation />);
 
-  const location = useLocation();
 
   const [openSearchMessage, setOpenSearchMessage] = useState(false);
 
-  // useEffect(() => {
-  //   if (location.pathname === "/app") {
-  //     // setComp(<Conversation />);
-  //     setComp(<Welcome />);
-  //   } else if (location.pathname === "/contact") {
-  //     setComp(<DetailContact />);
-  //   } else if (
-  //     location.pathname === "/app" &&
-  //     new URLSearchParams(location.search).get("id") === "2" &&
-  //     new URLSearchParams(location.search).get("type") === "individual-chat"
-  //   ) {
-  //     setComp(<Conversation />);
-  //   }
-  // }, [location]);
 
 
   return useRoutes([
     {
       path: "/auth",
-      element: <AuthLayout />,
+      element: (
+        <UnprotectedRoute>
+          <AuthLayout />,
+        </UnprotectedRoute>
+      ),
       children: [
-          { path: "login", element: <LoginForm /> },
-          { path: "forgot-password", element: <ForgotPasswordForm /> },
-          { path: "reset-password", element: <ResetPasseordForm /> },
-          { path: "register-user", element: <RegisterUser /> },
+        { path: "login", element: <LoginForm /> },
+        { path: "forgot-password", element: <ForgotPasswordForm /> },
+        { path: "reset-password", element: <ResetPasseordForm /> },
+        { path: "register-user", element: <RegisterUser /> },
       ],
     },
     {

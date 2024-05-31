@@ -7,7 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Fade from "@mui/material/Fade";
 import PopupWindow from "../../../components/PopupWindow";
 import { set } from "date-fns";
-// import Cookies from "js-cookie";
+import jsCookies from 'js-cookie';
 import Cookies from "universal-cookie";
 import { decryptData, encryptData } from "../../../utils/cookies";
 import { useUser } from "../../../context/UserContext";
@@ -36,7 +36,7 @@ function Navbar({ onNavbarReady }) {
   // console.log("Phone Number: ", phoneNumber);
 
   useEffect(() => {
-    
+
     if (token && phoneNumber) {
       const fetchProfile = async () => {
         try {
@@ -49,6 +49,22 @@ function Navbar({ onNavbarReady }) {
               },
             },
           );
+
+          if (response.status === 401) {
+            const allCookies = cookies.getAll();
+            for (const cookieName in allCookies) {
+              if (allCookies.hasOwnProperty(cookieName)) {
+                cookies.remove(cookieName, {
+                  path: "/",
+                });
+                cookies.remove(cookieName, {
+                  path: "/auth",
+                });
+              }
+            }
+            localStorage.clear();
+            throw new Error("Unauthorized");
+          }
 
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -131,7 +147,6 @@ function Navbar({ onNavbarReady }) {
       setPhoneNumberCookies(phoneNumberFromCookie);
     }
 
-    // Lấy token từ cookies và giải mã nó
     const tokenFromCookie = cookies.get("token");
     if (tokenFromCookie) {
       // const tokenDecrypted = decryptData(tokenFromCookie);
@@ -167,6 +182,34 @@ function Navbar({ onNavbarReady }) {
     setAnchorEl(null);
   };
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/logout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        },
+      );
+      const data = await response.json();
+      if (response.status === 401) {
+        console.error("Failed logout");
+        return;
+      }
+
+      if (response.ok) {
+        console.log("API call successful");
+      } else {
+        console.error("API call failed");
+      }
+    } catch (error) {
+      console.error("Error calling API:", error);
+    };
+  }
+
   /* Fix lỗi hiển thị avatar khi load lại dữ liệu */
   useEffect(() => {
     const avatarLoad = localStorage.getItem("avatar");
@@ -190,6 +233,21 @@ function Navbar({ onNavbarReady }) {
               },
             },
           );
+          if (response.status === 401) {
+            const allCookies = cookies.getAll();
+            for (const cookieName in allCookies) {
+              if (allCookies.hasOwnProperty(cookieName)) {
+                cookies.remove(cookieName, {
+                  path: "/",
+                });
+                cookies.remove(cookieName, {
+                  path: "/auth",
+                });
+              }
+            }
+            localStorage.clear();
+            throw new Error("Unauthorized");
+          }
 
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -221,28 +279,6 @@ function Navbar({ onNavbarReady }) {
       fetchProfile();
     }
   }, [token, phoneNumber]);
-  // console.log(profileData);
-
-  // useEffect(() => {
-  //   // Kiểm tra nếu đã có số điện thoại được lưu trong cookie, thì điền vào trường input số điện thoại
-  //   const phoneNumberFromCookie = Cookies.get('phoneNumber');
-  //   if (phoneNumberFromCookie) {
-  //     const phoneNumberDecrypted = decryptData(phoneNumberFromCookie);
-  //     setPhoneNumberCookies(phoneNumberDecrypted);
-  //   }
-  //   const tokenFromCookie = Cookies.get('token');
-  //   if (tokenFromCookie) {
-  //     const tokenDecrypted = decryptData(tokenFromCookie);
-  //     setTokenFromCookies(tokenDecrypted);
-  //   }
-
-  // }, []); // Chỉ chạy một lần sau khi component được render
-  
-  
-  // console.log("PhoneNumber on Cookies", phoneNumberCookies);
-  // console.log("Token on Cookies", tokenFromCookies);
-
-  /* Fix lỗi hiển thị avatar khi load lại dữ liệu */
   useEffect(() => {
     const avatarLoad = localStorage.getItem("avatar");
     if (avatarLoad) {
@@ -251,7 +287,6 @@ function Navbar({ onNavbarReady }) {
   }, []);
   // console.log("avt:"+avatar);
 
-  const [socket, setSocket] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
   const showMessage = (type, content) => {
     messageApi.open({
@@ -260,48 +295,6 @@ function Navbar({ onNavbarReady }) {
       duration: 10,
     });
   };
-  // useEffect(() => {
-  //   if (userID2) {
-  //     const newSocket = new WebSocket(`ws://localhost:8082/ws/user/${userID2}`);
-  //     newSocket.onopen = () => {
-  //       console.warn(
-  //         "WebSocket 'ws://localhost:8082/ws/user/' for UserID: ",
-  //         userID2,
-  //         " OPENED IN navber",
-  //       );
-  //     };
-
-  //     newSocket.onmessage = (event) => {
-  //       const data = event.data;
-  //       function isJSON(data) {
-  //         try {
-  //           JSON.parse(data);
-  //           return true;
-  //         } catch (error) {
-  //           return false;
-  //         }
-  //       }
-  //       if (isJSON(data)) {
-  //         const jsonData = JSON.parse(data);
-  //         console.log("Message received +++++++++++++++++++++:", jsonData);
-  //         console.log("senderName", jsonData.senderName);
-  //         console.log("tum>>>>>>>>>", jsonData.tum);
-  //         // Xử lý dữ liệu được gửi đến ở đây
-  //         if (jsonData) {
-  //           const content = `Bạn có lời mới kết bạn mới từ ${jsonData.senderName}.`;
-  //           console.log("content", content);
-  //           showMessage("success", content);
-  //           console.log("Runnn");
-  //         }
-  //       } else {
-  //         // console.error("Received data is not valid JSON:", data);
-  //         // Xử lý dữ liệu không phải là JSON ở đây (nếu cần)
-  //       }
-  //     };
-
-  //     setSocket(newSocket);
-  //   }
-  // }, [userID2]);
 
   return (
     <>
@@ -329,7 +322,6 @@ function Navbar({ onNavbarReady }) {
                     </div>
                   </Button>
                 ) : (
-                  // Hiển thị một phần tử loading hoặc hình ảnh mặc định
                   <Button
                     id="fade-button"
                     aria-controls={open ? "fade-menu" : undefined}
@@ -423,28 +415,32 @@ function Navbar({ onNavbarReady }) {
                           color: "#081c36",
                         }}
                         onClick={() => {
-                          handleClose(); // Đóng menu sau khi nhấp vào
-  
-                          // Danh sách các tên cookie cần xoá
-                          const cookieNames = ["phoneNumber", "token", "userID"];
-  
-                          // Lặp qua danh sách cookieNames và gọi hàm cookies.remove cho mỗi tên cookie
-                          cookieNames?.forEach((cookieName) => {
-                            cookies.remove(cookieName, {
-                              path: "/",
-                              domain: "localhost",
-                            });
-                            cookies.remove(cookieName, {
-                              path: "/auth",
-                              domain: "localhost",
-                            });
-                          });
-  
-                          // Lấy tất cả cookies
-                          // const allCookies = cookies.getAll();
-                          // console.log("++++++++++++++", allCookies);
-  
-                          // Xoá tất cả cookies trong localStorage
+                          handleLogout();
+
+                          const allCookies = cookies.getAll();
+                          for (const cookieName in allCookies) {
+                            if (allCookies.hasOwnProperty(cookieName)) {
+                              cookies.remove(cookieName, {
+                                path: "/",
+                              });
+                              cookies.remove(cookieName, {
+                                path: "/auth",
+                              });
+                            }
+                          }
+                          // const cookieNames = ["phoneNumber", "token", "userID"];
+
+                          // cookieNames?.forEach((cookieName) => {
+                          //   cookies.remove(cookieName, {
+                          //     path: "/",
+                          //     domain: "localhost",
+                          //   });
+                          //   cookies.remove(cookieName, {
+                          //     path: "/auth",
+                          //     domain: "localhost",
+                          //   });
+                          // });
+
                           localStorage.clear();
                         }}
                       >
@@ -455,13 +451,12 @@ function Navbar({ onNavbarReady }) {
                 </Menu>
               </div>
             </li>
-  
+
             <li>
               <Link
                 to="/app"
-                className={`flex justify-center p-4 py-5 ${
-                  location.pathname.startsWith("/app") ? "bg-[#006edc]" : ""
-                }`}
+                className={`flex justify-center p-4 py-5 ${location.pathname.startsWith("/app") ? "bg-[#006edc]" : ""
+                  }`}
               >
                 <img
                   src={messageImage}
@@ -473,9 +468,8 @@ function Navbar({ onNavbarReady }) {
             <li>
               <Link
                 to="/contact"
-                className={`flex justify-center p-4 py-5 ${
-                  location.pathname === "/contact" ? "bg-[#006edc]" : ""
-                }`}
+                className={`flex justify-center p-4 py-5 ${location.pathname === "/contact" ? "bg-[#006edc]" : ""
+                  }`}
               >
                 <img
                   src={contactImage}
@@ -487,9 +481,8 @@ function Navbar({ onNavbarReady }) {
             <li>
               <Link
                 to="/todo"
-                className={`flex justify-center p-4 py-5 ${
-                  location.pathname === "/todo" ? "bg-[#006edc]" : ""
-                }`}
+                className={`flex justify-center p-4 py-5 ${location.pathname === "/todo" ? "bg-[#006edc]" : ""
+                  }`}
               >
                 <img src={todoImage} className="h-[22px] w-[22px]" alt="avatar" />
               </Link>

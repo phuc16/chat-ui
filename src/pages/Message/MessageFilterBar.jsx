@@ -16,10 +16,8 @@ function MessageFilterBar() {
   const location = useLocation();
   const { state } = location;
   const {cons, setCons, loadDefaultAvt, setLoadDefaultAvt } = useUser();
-  // Kiểm tra xem state có tồn tại không trước khi truy cập
   if (state) {
     const { token, phoneNumber, data } = state;
-    // Bây giờ bạn có thể sử dụng token và phoneNumber ở đây
     // console.log(">>>>>>>TOKEN>>>>>>>>>>", token);
     // console.log(">>>>>>>PHONENUMBER>>>>>>>>", phoneNumber);
     console.log("data", data);

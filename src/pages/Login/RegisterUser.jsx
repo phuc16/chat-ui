@@ -60,46 +60,45 @@ export default function RegisterUser() {
             return ;
         }
 
-        // const credential = PhoneAuthProvider.credential(verificationId.verificationId, otp);
+        const credential = PhoneAuthProvider.credential(verificationId.verificationId, otp);
 
-        // await signInWithCredential(auth, credential)
-        //     .then(() => {
-        //         setOtp('')
-        //     })
-        //     .catch(error => {
-        //         setFlag(true)
-        //         setError("Mã xác thực không đúng")
-        //         console.error("Mã xác thực không đúng", error);
-        //         return;
-        //     })
-        
-        try {
-            const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/register`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        phoneNumber: phoneNumber,
-                        password: password,
-                    }),
-                },
-            );
-            const data = await response.json();
-            if (response.ok) {
-                navigate("/auth/login");
-                console.log("API call successful");
-            } else {
+        await signInWithCredential(auth, credential)
+            .then(async () => {
+                setOtp('')
+                try {
+                    const response = await fetch(
+                        `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/register`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                phoneNumber: phoneNumber,
+                                password: password,
+                            }),
+                        },
+                    );
+                    const data = await response.json();
+                    if (response.ok) {
+                        navigate("/auth/login");
+                        console.log("API call successful");
+                    } else {
+                        setFlag(true)
+                        setError(data.msg)
+                        console.error("API call failed");
+                    }
+                } catch (error) {
+                    navigate("/");
+                    console.error("Error calling API:", error);
+                }
+            })
+            .catch(error => {
                 setFlag(true)
-                setError(data.msg)
-                console.error("API call failed");
-            }
-        } catch (error) {
-            navigate("/");
-            console.error("Error calling API:", error);
-        }
+                setError("Mã xác thực không đúng")
+                console.error("Mã xác thực không đúng", error);
+                return;
+            })
     };
 
 return (
@@ -140,7 +139,7 @@ return (
                 </div>
             </div>
             }
-            <div className="mt-6 px-2">
+            {isSendOtp && <div className="mt-6 px-2">
                 <button
                     className="w-full transform rounded-md bg-blue-400 py-2 tracking-wide text-white transition-colors duration-200"
                     // type="submit"
@@ -148,7 +147,7 @@ return (
                 >
                     Xác thực
                 </button>
-            </div>
+            </div>}
             </form>
             <form onSubmit={handleRegister}  className="mt-2  px-7">
             <div className="mx-2 mb-2 border-b-2 py-4">

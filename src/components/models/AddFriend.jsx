@@ -34,6 +34,8 @@ import { Axios } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "../../context/UserContext";
 
+// import Cookies from "universal-cookie";
+
 const theme = createTheme({
   palette: {
     silver: {
@@ -48,16 +50,16 @@ const theme = createTheme({
 const recentSearchesData = [
   {
     id: 1,
-    name: "John Doe",
+    name: "Inori Yuzuriha",
     avatar:
-      "https://eliteprschool.edu.vn/wp-content/uploads/2017/08/xay-dung-hinh-anh-doanh-nha-1.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGs2PdOdWFS33PmZco92XsZspbwRYRwrJRGup4QRq7cg&s",
     phoneNumber: "(+84) 0987665148", // Số điện thoại bắt đầu bằng (+84)
   },
   {
     id: 2,
-    name: "Jane Smith",
+    name: "Yuki",
     avatar:
-      "https://cdn-i.vtcnews.vn/resize/th/upload/2023/10/13/anh-bao-chi--2-11095058.jpg",
+      "https://gcs.tripi.vn/public-tripi/tripi-feed/img/474014Zdb/anh-gai-xinh-cute-de-thuong-hot-girl-3.jpg",
     phoneNumber: "(+84) 0987654321", // Số điện thoại bắt đầu bằng (+84)
   },
   // {
@@ -102,16 +104,17 @@ function handleOpenDialog3(setOpenDialog) {
 
 const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
   const dateTime = new Date(data.birthday);
-  const conservation = JSON.parse(localStorage.getItem("conversations"));
+  const conversation = JSON.parse(localStorage.getItem("conversations"));
   const [type, setType] = useState("");
-  const [conservationFriend, setConservationFriend] = useState([]);
+  const [conversationFriend, setConversationFriend] = useState([]);
 
+  console.log(conversation)
   useEffect(() => {
-    const filteredConversations = conservation?.filter(
-      (chat) => chat.chatName === data.userName,
+    const filteredConversations = conversation?.filter(
+      (chat) => chat.id_UserOrGroup === data.userID,
     );
     console.log("filteredConversations", filteredConversations);
-    setConservationFriend(filteredConversations);
+    setConversationFriend(filteredConversations);
     if (filteredConversations?.length > 0) {
       setType(filteredConversations[0].type);
     }
@@ -119,12 +122,12 @@ const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
 
   console.log("type", type);
 
-  const handleClose = () => {};
+  const handleClose = () => { };
   return (
     <motion.div
       className="h-[551.5px] w-[400px]"
-      initial={{ x: "-50vw" }} // Vị trí ban đầu: ngoài màn hình bên trái
-      animate={{ x: 0 }} // Vị trí sau khi xuất hiện: giữa màn hình
+      initial={{ x: "-50vw" }}
+      animate={{ x: 0 }}
       transition={{
         type: "spring",
         stiffness: 150,
@@ -168,7 +171,7 @@ const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
             ) : type === "FRIEND" ? (
               <div className="flex flex-1 items-center justify-center pt-[227px]">
                 <a
-                  href={`${process.env.REACT_APP_SELF_HOST}/app/chat?id=${conservationFriend[0].chatID}&type=individual-chat&chatName=${conservationFriend[0].chatName}&chatAvatar=${conservationFriend[0].chatAvatar}`}
+                  href={`${process.env.REACT_APP_SELF_HOST}/app/chat?id=${conversationFriend[0].chatID}&type=individual-chat&chatName=${conversationFriend[0].chatName}&chatAvatar=${conversationFriend[0].chatAvatar}`}
                   className="block w-full"
                 >
                   <button className="h-8 w-full rounded border bg-[#E5EFFF] text-base font-medium text-[#005ae0]">
@@ -373,12 +376,10 @@ export default function AddFriendDialog() {
     // Lấy userID từ cookies
     const userIDFromCookie = Cookies.get("userID");
 
-    // Nếu có userID từ cookies, giải mã và trả về
     if (userIDFromCookie) {
       return userIDFromCookie;
     }
 
-    // Nếu không có userID từ cookies, trả về null
     return null;
   };
 
@@ -396,15 +397,41 @@ export default function AddFriendDialog() {
       };
       newSocket.onmessage = (event) => {
         console.log("Message received:", event.data);
-        // Xử lý dữ liệu được gửi đến ở đây
+
       };
       setSocket(newSocket);
 
       return () => {
-        newSocket.close(); // Đóng kết nối khi component unmount hoặc userID thay đổi
+        newSocket.close();
       };
     }
   }, [userID]);
+
+  useEffect(() => {
+    const fetchSuggestedFriends = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/suggest`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+            method: "GET",
+          },
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch suggested friends");
+        }
+        const data = await response.json();
+        console.log(data);
+        setSuggestedFriends(data)
+      } catch (error) {
+        console.error("Error fetching suggested friends:", error);
+      }
+    }
+    fetchSuggestedFriends();
+  }, [])
 
   const [recentSearches, setRecentSearches] = useState(recentSearchesData);
   const [suggestedFriends, setSuggestedFriends] =
@@ -433,11 +460,6 @@ export default function AddFriendDialog() {
     handleClose();
   };
 
-  const handleAddSuggestedFriend = (friend) => {
-    console.log(`Add suggested friend: ${friend.name}`);
-    // Thực hiện xử lý thêm bạn bè từ danh sách người có thể quen biết ở đây
-  };
-
   const handleSelectCountry = (e) => {
     const selectedCountryCode = e.target.value;
     const selectedCountry = countries.find(
@@ -448,12 +470,10 @@ export default function AddFriendDialog() {
   };
 
   const handleFindUserByPhoneNumber = () => {
-    // Lấy token từ cookies
     const token = Cookies.get("token");
-    // Kiểm tra xem token có tồn tại không
     if (!token) {
       console.error("Token not found in cookies.");
-      return; // Không thể gửi yêu cầu nếu không có token
+      return;
     }
 
     axios
@@ -474,8 +494,22 @@ export default function AddFriendDialog() {
         }
       })
       .catch((error) => {
-        // Bắt lỗi 404
-        if (error.response && error.response.status === 404) {
+        if (error.response && error.response.status === 401) {
+          const cookies = new Cookies()
+          const allCookies = cookies.getAll();
+          for (const cookieName in allCookies) {
+            if (allCookies.hasOwnProperty(cookieName)) {
+              cookies.remove(cookieName, {
+                path: "/",
+              });
+              cookies.remove(cookieName, {
+                path: "/auth",
+              });
+            }
+          }
+          localStorage.clear();
+          throw new Error("Unauthorized");
+        } else if (error.response && error.response.status === 404) {
           warning();
           console.error("User not found with the provided phone number.");
         } else {
@@ -510,14 +544,14 @@ export default function AddFriendDialog() {
           " OPENED",
         );
 
-        // Gửi tin nhắn khi kết nối thành công
+
         newSocket.send(JSON.stringify(message));
         console.log("Message sent:", message);
       };
 
       newSocket.onmessage = (event) => {
         console.log("Message received:", event.data);
-        // Xử lý dữ liệu được gửi đến ở đây
+
       };
 
       newSocket.onclose = () => {
@@ -649,7 +683,7 @@ export default function AddFriendDialog() {
                 }
               >
                 <span className="text-[13px] text-[#7589A3]">
-                  Kết quả gần nhất
+                  Kết quả gần nhất - Hardcode - TODO
                 </span>
                 <ul>
                   {recentSearches?.map((data, index) => (
@@ -674,7 +708,7 @@ export default function AddFriendDialog() {
                 </div>
                 <ul>
                   {suggestedFriends?.map((friend, index) => (
-                    <AvatarNameItem key={index} data={friend} type={"MS"} />
+                    <AvatarNameItem key={index} data={friend} setData={setSuggestedFriends} handleClose={handleClose} messageApi={messageApi} contextHolder={contextHolder} type={"MS"} />
                   ))}
                 </ul>
               </div>

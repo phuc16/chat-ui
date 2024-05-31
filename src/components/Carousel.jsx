@@ -8,31 +8,30 @@ export default function Carousel({ slides }) {
   const previousSlide = () => {
     if (!isSliding) {
       setIsSliding(true);
-      setAutoSlide(false); // Tạm ngưng auto slide khi chuyển slide bằng nút previous
+      setAutoSlide(false);
       if (current === 0) setCurrent(slides.length - 1);
       else setCurrent(current - 1);
       setTimeout(() => {
-        setAutoSlide(true); // Kích hoạt lại auto slide sau một khoảng thời gian
-      }, 1000); // Sau 1 giây
+        setAutoSlide(true); 
+      }, 1000); 
     }
   };
 
   const nextSlide = () => {
     if (!isSliding) {
       setIsSliding(true);
-      setAutoSlide(false); // Tạm ngưng auto slide khi chuyển slide bằng nút next
+      setAutoSlide(false); 
       if (current === slides.length - 1) setCurrent(0);
       else setCurrent(current + 1);
       setTimeout(() => {
-        setAutoSlide(true); // Kích hoạt lại auto slide sau một khoảng thời gian
-      }, 1000); // Sau 1 giây
+        setAutoSlide(true); 
+      }, 1000);
     }
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (autoSlide && !isSliding) {
-        // Kiểm tra autoSlide và không đang trong quá trình chuyển slide mới gọi nextSlide
         nextSlide();
       }
     }, 2000);
@@ -47,7 +46,7 @@ export default function Carousel({ slides }) {
       clearInterval(interval);
       document.removeEventListener("transitionend", transitionEnd);
     };
-  }, [autoSlide, current, isSliding]); // useEffect được gọi lại khi autoSlide, current hoặc isSliding thay đổi
+  }, [autoSlide, current, isSliding]);
 
   return (
     <div className="relative overflow-hidden pb-10">

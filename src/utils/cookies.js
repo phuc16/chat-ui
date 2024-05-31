@@ -1,29 +1,23 @@
 import { getTokenFromCookies } from './auth';
 
-// Import thư viện mã hóa AES
 import CryptoJS from 'crypto-js';
 
-// Khóa bí mật để mã hóa/ giải mã dữ liệu
-const secretKey = 'tranquanghuydangcodeappzaloxinchaotatcacacban09@#$%^&*()_+';
+const secretKey = 'secret';
 
-// Hàm để mã hóa dữ liệu trước khi lưu vào cookies
 export const encryptData = (data) => {
     const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
     return encryptedData;
 };
 
-// Hàm để giải mã dữ liệu từ cookies
 export const decryptData = (encryptedData) => {
     try {
         const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
         const decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
 
-        // Kiểm tra xem dữ liệu có đúng định dạng JSON không
         if (!decryptedData || decryptedData.trim() === '') {
             throw new Error('Invalid JSON data');
         }
 
-        // Parse dữ liệu JSON
         const parsedData = JSON.parse(decryptedData);
         return parsedData;
     } catch (error) {
@@ -48,10 +42,9 @@ export const getUserDataFromCookies = async () => {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + token
                 }
-            },
-            );
+            });
             const data = await response.json();
-            if (response.status == 401) {
+            if (response.status === 401) {
                 console.error("Failed get profile");
                 return null;
             }

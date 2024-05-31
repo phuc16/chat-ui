@@ -3,6 +3,7 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie"
 
 export default function InfoAccount({ isOpen, onClose, data, phoneNumber, token }) {
     const [loadAvt, setLoadAvt] = useState(data.avatar);
@@ -49,7 +50,22 @@ export default function InfoAccount({ isOpen, onClose, data, phoneNumber, token 
             body: JSON.stringify(jsonAvt),
           },
         );
-
+        if (response.status === 401) {
+          const cookies = new Cookies();
+          const allCookies = cookies.getAll();
+          for (const cookieName in allCookies) {
+            if (allCookies.hasOwnProperty(cookieName)) {
+              cookies.remove(cookieName, {
+                path: "/",
+              });
+              cookies.remove(cookieName, {
+                path: "/auth",
+              });
+            }
+          }
+          localStorage.clear();
+          throw new Error("Unauthorized");
+        }
         if (res.ok) {
           setLoadAvt(newAvatar);
         }
