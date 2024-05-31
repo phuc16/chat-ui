@@ -1132,7 +1132,7 @@ const ConversationGroup = () => {
                   <span className="flex items-center justify-center">
                     <img
                       className="mt-[1px] h-[10px]"
-                      src="/src/assets/tag.png"
+                      src="/tag.png"
                       alt=""
                     />
                   </span>
@@ -1142,23 +1142,23 @@ const ConversationGroup = () => {
             <div className="flex flex-row items-center">
               <a href="" className="p-1">
                 <img
-                  src="/src/assets/group-user-plus.png"
+                  src="/group-user-plus.png"
                   alt=""
                   className="w-[22px] "
                 />
               </a>
               <a href="" className="p-2">
                 <img
-                  src="/src/assets/mini-search.png"
+                  src="/mini-search.png"
                   alt=""
                   className="m-1 h-4 w-4"
                 />
               </a>
               <a href="" className="p-2">
-                <img src="/src/assets/video.png" alt="" className="m-1 h-5 w-5" />
+                <img src="/video.png" alt="" className="m-1 h-5 w-5" />
               </a>
               
-              <img onClick={handleClickRightBar} src="/src/assets/right-bar.png" alt="" className="m-1 h-4 w-4"/>
+              <img onClick={handleClickRightBar} src="/right-bar.png" alt="" className="m-1 h-4 w-4"/>
 
             </div>
           </div>

@@ -337,7 +337,7 @@ const MessageDetail = ({
                   }}
                 >
                   <img
-                    src="/src/assets/icons/quotation-right-mark.png"
+                    src="/icons/quotation-right-mark.png"
                     alt=""
                     className="mt-[2px] h-[13px] w-[13px]"
                   />
@@ -351,17 +351,17 @@ const MessageDetail = ({
                   }}
                   className="cursor-pointer px-[2px] opacity-80 hover:opacity-100"
                 >
-                  <img src="/src/assets/reply.png" alt="" className="h-4 w-4" />
+                  <img src="/reply.png" alt="" className="h-4 w-4" />
                 </div>
                 <a href="#" className=" opacity-80 hover:opacity-100">
-                  <img src="/src/assets/todos.png" alt="" className="h-4 w-4" />
+                  <img src="/todos.png" alt="" className="h-4 w-4" />
                 </a>
                 <div
                   onClick={handleClick}
                   className="cursor-pointer px-[2px]  opacity-70 hover:opacity-100"
                 >
                   <img
-                    src="/src/assets/option.png"
+                    src="/option.png"
                     alt=""
                     className="h-4 w-4"
                   />
@@ -384,7 +384,7 @@ const MessageDetail = ({
                     }}
                   >
                     <img
-                      src="/src/assets/icons/copy.png"
+                      src="/icons/copy.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />
@@ -392,7 +392,7 @@ const MessageDetail = ({
                   </MenuItem>
                   <MenuItem onClick={handleClose}>
                     <img
-                      src="/src/assets/icons/push-pin.png"
+                      src="/icons/push-pin.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />
@@ -407,7 +407,7 @@ const MessageDetail = ({
                     }}
                   >
                     <img
-                      src="/src/assets/icons/refresh.png"
+                      src="/icons/refresh.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />
@@ -421,7 +421,7 @@ const MessageDetail = ({
                     }}
                   >
                     <img
-                      src="/src/assets/icons/delete.png"
+                      src="/icons/delete.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />
@@ -474,7 +474,7 @@ const MessageDetail = ({
                       <div className="flex w-full items-center text-xs">
                         <div className="flex">
                           <img
-                            src="/src/assets/icons/quotation.png"
+                            src="/icons/quotation.png"
                             alt=""
                             className="h-4 w-4"
                           />
@@ -610,7 +610,7 @@ const MessageDetail = ({
                   }}
                 >
                   <img
-                    src="/src/assets/icons/quotation-right-mark.png"
+                    src="/icons/quotation-right-mark.png"
                     alt=""
                     className="mt-[2px] h-[13px] w-[13px]"
                   />
@@ -622,17 +622,17 @@ const MessageDetail = ({
                   }}
                   className="cursor-pointer px-[2px]  opacity-80 hover:opacity-100"
                 >
-                  <img src="/src/assets/reply.png" alt="" className="h-4 w-4" />
+                  <img src="/reply.png" alt="" className="h-4 w-4" />
                 </div>
                 <a href="#" className=" opacity-80 hover:opacity-100">
-                  <img src="/src/assets/todos.png" alt="" className="h-4 w-4" />
+                  <img src="/todos.png" alt="" className="h-4 w-4" />
                 </a>
                 <div
                   onClick={handleClick}
                   className="cursor-pointer px-[2px]  opacity-80 hover:opacity-100"
                 >
                   <img
-                    src="/src/assets/option.png"
+                    src="/option.png"
                     alt=""
                     className="h-4 w-4"
                   />
@@ -656,7 +656,7 @@ const MessageDetail = ({
                     }}
                   >
                     <img
-                      src="/src/assets/icons/copy.png"
+                      src="/icons/copy.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />
@@ -664,7 +664,7 @@ const MessageDetail = ({
                   </MenuItem>
                   <MenuItem onClick={handleClose}>
                     <img
-                      src="/src/assets/icons/push-pin.png"
+                      src="/icons/push-pin.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />
@@ -677,7 +677,7 @@ const MessageDetail = ({
                     }}
                   >
                     <img
-                      src="/src/assets/icons/delete.png"
+                      src="/icons/delete.png"
                       alt=""
                       className="mr-3 h-4 w-4"
                     />

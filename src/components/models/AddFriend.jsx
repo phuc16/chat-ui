@@ -548,7 +548,7 @@ export default function AddFriendDialog() {
         <Fragment>
           <div className="w-8 px-1 hover:bg-gray-200">
             <img
-              src="/src/assets/user-plus.png"
+              src="/user-plus.png"
               alt=""
               // className="w-[22px] cursor-pointer items-center justify-center"
               className="cursor-pointer items-center justify-center"

@@ -129,7 +129,7 @@ const Conversation = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch(`${process.env.SERVICE_UPLOAD}`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVICE_UPLOAD}`, {
         method: "POST",
         body: formData,
       });
@@ -171,7 +171,7 @@ const Conversation = () => {
       const uploadPromises = files?.map(async (file) => {
         const formData = new FormData();
         formData.append("file", file);
-        const response = await fetch(`${process.env.SERVICE_UPLOAD}`, {
+        const response = await fetch(`${process.env.REACT_APP_SERVICE_UPLOAD}`, {
           method: "POST",
           body: formData,
         });
@@ -1489,7 +1489,7 @@ const Conversation = () => {
                           </div>
                           <div className="px-[80px] pb-8 pt-[80px]">
                             <img
-                              src="/src/assets/search-empty.a19dba60677c95d6539d26d2dc363e4e.png"
+                              src="/search-empty.a19dba60677c95d6539d26d2dc363e4e.png"
                               alt=""
                             />
                           </div>
@@ -1577,7 +1577,7 @@ const Conversation = () => {
                       <span className="flex items-center justify-center">
                         <img
                           className="mt-[1px] h-[10px]"
-                          src="/src/assets/tag.png"
+                          src="/tag.png"
                           alt=""
                         />
                       </span>
@@ -1587,7 +1587,7 @@ const Conversation = () => {
                 <div className="flex flex-row items-center">
                   <a href="" className="p-1">
                     <img
-                      src="/src/assets/group-user-plus.png"
+                      src="/group-user-plus.png"
                       alt=""
                       className="w-[22px] "
                     />
@@ -1600,14 +1600,14 @@ const Conversation = () => {
                     }}
                   >
                     <img
-                      src="/src/assets/mini-search.png"
+                      src="/mini-search.png"
                       alt=""
                       className="m-1 h-4 w-4"
                     />
                   </div>
                   <Link to="/videocall" className="p-2">
                     <img
-                      src="/src/assets/video.png"
+                      src="/video.png"
                       alt=""
                       className="m-1 h-5 w-5"
                     />
@@ -1619,7 +1619,7 @@ const Conversation = () => {
                     className="cursor-pointer p-2"
                   >
                     <img
-                      src="/src/assets/right-bar.png"
+                      src="/right-bar.png"
                       alt=""
                       className="m-1 h-4 w-4"
                     />
@@ -1870,7 +1870,7 @@ const Conversation = () => {
                   <div className="mr-2 mt-1 flex w-10 items-center justify-center">
                     <label htmlFor="videoInput">
                       <img
-                        src="/src/assets/icons/film.png"
+                        src="/icons/film.png"
                         alt=""
                         className="h-[26px] w-[24px] cursor-pointer opacity-80 hover:opacity-100"
                       />
@@ -1939,7 +1939,7 @@ const Conversation = () => {
                               <div className="flex w-full items-center text-xs">
                                 <div className="flex">
                                   <img
-                                    src="/src/assets/icons/quotation.png"
+                                    src="/icons/quotation.png"
                                     alt=""
                                     className="h-4 w-4"
                                   />
@@ -2036,7 +2036,7 @@ const Conversation = () => {
                       <div className="flex w-full items-center justify-center">
                         <div className="flex h-8 w-8 items-center justify-center rounded-[50%] border bg-[#E7EAED] hover:bg-gray-300">
                           <img
-                            src="/src/assets/icons/bell.png"
+                            src="/icons/bell.png"
                             alt=""
                             className="w-5"
                           />
@@ -2061,7 +2061,7 @@ const Conversation = () => {
                       <div className="flex w-full items-center justify-center">
                         <div className="flex h-8 w-8 items-center justify-center rounded-[50%] border bg-[#E7EAED] hover:bg-gray-300">
                           <img
-                            src="/src/assets/icons/push-pin.png"
+                            src="/icons/push-pin.png"
                             alt=""
                             className="h-[18px] w-[18px]"
                           />
@@ -2084,7 +2084,7 @@ const Conversation = () => {
                           {/* <img src="" alt="" className="mt-1 w-5" /> */}
                           <div className="-ml-1 mt-2 rounded-[50%]">
                             <CreateGroup
-                              image={"/src/assets/icons/people.png"}
+                              image={"//icons/people.png"}
                             />
                           </div>
                         </div>
@@ -2190,7 +2190,7 @@ const Conversation = () => {
                           >
                             <div className="flex h-[42px] w-[42px] items-center justify-center rounded border">
                               <img
-                                src="/src/assets/icons/link.png"
+                                src="/icons/link.png"
                                 alt=""
                                 className="h-4 w-4"
                               />

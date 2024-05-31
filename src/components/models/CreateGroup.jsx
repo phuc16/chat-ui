@@ -228,7 +228,7 @@ export default function CreateGroup({ image }) {
       <Fragment>
         <div className={`w-8 px-1 ${image ? "" : "hover:bg-gray-200"} `}>
           <img
-            src={image ? image : "/src/assets/group-user-plus.png"}
+            src={image ? image : "/group-user-plus.png"}
             alt=""
             className="cursor-pointer items-center justify-center"
             style={{ width: "100%", height: "100%" }}

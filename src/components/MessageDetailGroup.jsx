@@ -228,19 +228,19 @@ const MessageDetailGroup = ({
             <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg bg-[#DDDBDB] p-1 px-2">
               <a href="#">
                 <img
-                  src="/src/assets/reply-arrow.png"
+                  src="/reply-arrow.png"
                   alt=""
                   className="h-4 w-4"
                 />
               </a>
               <a href="#">
-                <img src="/src/assets/reply.png" alt="" className="h-4 w-4" />
+                <img src="/reply.png" alt="" className="h-4 w-4" />
               </a>
               <a href="#">
-                <img src="/src/assets/todos.png" alt="" className="h-4 w-4" />
+                <img src="/todos.png" alt="" className="h-4 w-4" />
               </a>
               <div onClick={handleClick} className="cursor-pointer px-[2px]">
-                <img src="/src/assets/option.png" alt="" className="h-4 w-4" />
+                <img src="/option.png" alt="" className="h-4 w-4" />
               </div>
               <Menu
                 id="fade-menu"
@@ -361,19 +361,19 @@ const MessageDetailGroup = ({
             <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg bg-[#DDDBDB] p-1 px-2">
               <a href="#">
                 <img
-                  src="/src/assets/reply-arrow.png"
+                  src="/reply-arrow.png"
                   alt=""
                   className="h-4 w-4"
                 />
               </a>
               <a href="#">
-                <img src="/src/assets/reply.png" alt="" className="h-4 w-4" />
+                <img src="/reply.png" alt="" className="h-4 w-4" />
               </a>
               <a href="#">
-                <img src="/src/assets/todos.png" alt="" className="h-4 w-4" />
+                <img src="/todos.png" alt="" className="h-4 w-4" />
               </a>
               <div onClick={handleClick} className="cursor-pointer px-[2px]">
-                <img src="/src/assets/option.png" alt="" className="h-4 w-4" />
+                <img src="/option.png" alt="" className="h-4 w-4" />
               </div>
               <Menu
                 id="fade-menu"
@@ -595,19 +595,19 @@ export default MessageDetailGroup;
 //             <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg bg-[#DDDBDB] p-1 px-2">
 //               <a href="">
 //                 <img
-//                   src="/src/assets/reply-arrow.png"
+//                   src="/reply-arrow.png"
 //                   alt=""
 //                   className="h-4 w-4"
 //                 />
 //               </a>
 //               <a href="">
-//                 <img src="/src/assets/reply.png" alt="" className="h-4 w-4" />
+//                 <img src="/reply.png" alt="" className="h-4 w-4" />
 //               </a>
 //               <a href="">
-//                 <img src="/src/assets/todos.png" alt="" className="h-4 w-4" />
+//                 <img src="/todos.png" alt="" className="h-4 w-4" />
 //               </a>
 //               <div onClick={handleClick} className="cursor-pointer px-[2px]">
-//                 <img src="/src/assets/option.png" alt="" className="h-4 w-4" />
+//                 <img src="/option.png" alt="" className="h-4 w-4" />
 //               </div>
 //               <Menu
 //                 id="fade-menu"
@@ -674,19 +674,19 @@ export default MessageDetailGroup;
 //             <div className="mb-3 ml-7 mr-3 flex w-[116px] justify-between rounded-lg bg-[#DDDBDB] p-1 px-2">
 //               <a href="">
 //                 <img
-//                   src="/src/assets/reply-arrow.png"
+//                   src="/reply-arrow.png"
 //                   alt=""
 //                   className="h-4 w-4"
 //                 />
 //               </a>
 //               <a href="">
-//                 <img src="/src/assets/reply.png" alt="" className="h-4 w-4" />
+//                 <img src="/reply.png" alt="" className="h-4 w-4" />
 //               </a>
 //               <a href="">
-//                 <img src="/src/assets/todos.png" alt="" className="h-4 w-4" />
+//                 <img src="/todos.png" alt="" className="h-4 w-4" />
 //               </a>
 //               <div onClick={handleClick} className="cursor-pointer px-[2px]">
-//                 <img src="/src/assets/option.png" alt="" className="h-4 w-4" />
+//                 <img src="/option.png" alt="" className="h-4 w-4" />
 //               </div>
 //               <Menu
 //                 id="fade-menu"

@@ -408,7 +408,7 @@ return (
         <div className="mt-10 flex w-[344px] flex-col items-center justify-center">
           <div className="flex w-full items-center justify-center">
             <img
-              src="/src/assets/icons/empty-box.png"
+              src="/icons/empty-box.png"
               alt=""
               className="w-[100px]"
             />

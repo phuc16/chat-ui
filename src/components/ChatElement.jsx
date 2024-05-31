@@ -188,7 +188,7 @@ function ChatElement({
             return (
               <span className="flex items-center">
                 <img
-                  src="/src/assets/icons/file-default.png"
+                  src="/icons/file-default.png"
                   alt=""
                   className="h-[14px] w-[14px]"
                 />
@@ -380,7 +380,7 @@ function ChatElement({
                             <span className="flex items-center">
                               Bạn:&nbsp;
                               <img
-                                src="/src/assets/icons/image.png"
+                                src="/icons/image.png"
                                 alt=""
                                 className="h-[14px] w-[14px]"
                               />
@@ -393,7 +393,7 @@ function ChatElement({
                             <span className="flex items-center">
                               Bạn:&nbsp;
                               <img
-                                src="/src/assets/icons/file-default.png"
+                                src="/icons/file-default.png"
                                 alt=""
                                 className="h-[14px] w-[14px]"
                               />
