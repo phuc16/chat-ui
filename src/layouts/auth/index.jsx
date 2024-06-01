@@ -65,7 +65,7 @@ export default function AuthLayout() {
       }
     };
 
-    fetchQrCode();
+    // fetchQrCode();
   }, []);
 
   useEffect(() => {

@@ -6,10 +6,25 @@ import { v4 as uuidv4 } from "uuid";
 
 export default function AvatarNameItem({ data, setData, type, handleClose, messageApi, contextHolder }) {
   const defaultText = `Xin chào! Mình tìm thấy bạn bằng số điện thoại. Kết bạn với mình nhé!`;
+  const conversation = JSON.parse(localStorage.getItem("conversations"));
+  const [type, setType] = useState("");
+  const [conversationFriend, setConversationFriend] = useState([]);
+
+  console.log(conversation)
+  useEffect(() => {
+    const filteredConversations = conversation?.filter(
+      (chat) => chat.id_UserOrGroup === data.userID,
+    );
+    console.log("filteredConversations", filteredConversations);
+    setConversationFriend(filteredConversations);
+    if (filteredConversations?.length > 0) {
+      setType(filteredConversations[0].type);
+    }
+  }, [data]);
   const success = () => {
     messageApi.open({
       type: "success",
-      content: "This is a success message",
+      content: "Kết bạn thành công",
     });
   };
   const handleAddSuggestedFriend = (friend) => {

@@ -356,7 +356,7 @@ export default function AddFriendDialog() {
   const success = () => {
     messageApi.open({
       type: "success",
-      content: "This is a success message",
+      content: "Kết bạn thành công",
     });
   };
   const warning = () => {
