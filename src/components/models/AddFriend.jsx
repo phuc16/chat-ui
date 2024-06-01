@@ -102,7 +102,7 @@ function handleOpenDialog3(setOpenDialog) {
   setOpenDialog("dialog3");
 }
 
-const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
+const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber, success, successRemove, handleClose }) => {
   const dateTime = new Date(data.birthday);
   const conversation = JSON.parse(localStorage.getItem("conversations"));
   const [type, setType] = useState("");
@@ -122,7 +122,45 @@ const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
 
   console.log("type", type);
 
-  const handleClose = () => { };
+  
+  const handleRemoveFriendRequest = () => {
+    const receiverID = data.userID;
+    const message = {
+      id: uuidv4(),
+      tum: "TUM02",
+      senderID: Cookies.get("userID"),
+      receiverID: receiverID,
+    };
+
+    const newSocket = new WebSocket(
+      `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${receiverID}`,
+    );
+
+    newSocket.onopen = () => {
+      console.warn(
+        `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
+        receiverID,
+        " OPENED",
+      );
+     
+      newSocket.send(JSON.stringify(message));
+      console.log("Message sent:", message);
+    };
+
+    newSocket.onmessage = (event) => {
+      console.log("Message received:", event.data);
+      
+    };
+
+    newSocket.onclose = () => {
+      console.warn(
+        `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
+        receiverID,
+        " CLOSED",
+      );
+    };
+  };
+
   return (
     <motion.div
       className="h-[551.5px] w-[400px]"
@@ -154,15 +192,19 @@ const AddFriendDialog2 = ({ data, setOpenDialog, phoneNumber }) => {
 
               {/* <p className=" text-sm">Lorem ipsum dolor sit amet</p> */}
             </div>
-            {type === "REQUESTED" ? (
+            {type === "REQUESTS" ? (
               <div className="flex flex-1 items-center justify-center pt-[227px]">
                 <button
                   className="mr-4 h-8 w-[178px] rounded border bg-[#EAEDF0] text-base font-medium text-tblack"
                   onClick={() => {
-                    handleClose();
+                    handleRemoveFriendRequest();
+                    successRemove();
+                      setTimeout(() => {
+                        handleClose();
+                      }, 700);
                   }}
                 >
-                  Huỷ kết bạn
+                  Thu hồi
                 </button>
                 <button className="h-8 w-[178px] rounded border bg-[#E5EFFF] text-base font-medium text-[#005ae0]">
                   Nhắn tin
@@ -274,8 +316,8 @@ const AddFriendDialog3 = ({ data, updateText, text }) => {
   return (
     <motion.div
       className="h-[485.5px] w-[400px]"
-      initial={{ x: "-50vw" }} // Vị trí ban đầu: ngoài màn hình bên trái
-      animate={{ x: 0 }} // Vị trí sau khi xuất hiện: giữa màn hình
+      initial={{ x: "-50vw" }}
+      animate={{ x: 0 }}
       transition={{
         type: "spring",
         stiffness: 150,
@@ -359,6 +401,12 @@ export default function AddFriendDialog() {
       content: "Kết bạn thành công",
     });
   };
+  const successRemove = () => {
+    messageApi.open({
+      type: "success",
+      content: "Thu hồi lời mời thành công",
+    });
+  };
   const warning = () => {
     messageApi.open({
       type: "warning",
@@ -433,6 +481,32 @@ export default function AddFriendDialog() {
     fetchSuggestedFriends();
   }, [])
 
+  useEffect(() => {
+    const fetchRecentSearch = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/profile/recent-search`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+            method: "GET",
+          },
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch suggested friends");
+        }
+        const data = await response.json();
+        console.log(data);
+        setRecentSearches(data)
+      } catch (error) {
+        console.error("Error fetching suggested friends:", error);
+      }
+    }
+    fetchRecentSearch();
+  }, [])
+
   const [recentSearches, setRecentSearches] = useState(recentSearchesData);
   const [suggestedFriends, setSuggestedFriends] =
     useState(suggestedFriendsData);
@@ -485,8 +559,12 @@ export default function AddFriendDialog() {
       .then((response) => {
         console.log(response.data);
         setUserFound(response.data);
-        // Kiểm tra nếu tìm thấy người dùng
         if (response.data) {
+          if (recentSearches?.length > 0) {
+            setRecentSearches((item) => [response.data, ...item])
+          } else {
+            setRecentSearches([response.data])
+          }
           setOpenDialog("dialog2"); // Mở dialog khác
           // setOpenDialog("dialog2");
         } else {
@@ -615,6 +693,9 @@ export default function AddFriendDialog() {
                   // handleShowDialog3={handleOpenDialog3}
                   setOpenDialog={setOpenDialog}
                   phoneNumber={phoneNumber}
+                  success={success}
+                  successRemove={successRemove}
+                  handleClose={handleClose}
                 ></AddFriendDialog2>
               ) : openDialog === "dialog3" ? (
                 <AddFriendDialog3
@@ -683,11 +764,11 @@ export default function AddFriendDialog() {
                 }
               >
                 <span className="text-[13px] text-[#7589A3]">
-                  Kết quả gần nhất - Hardcode - TODO
+                  Kết quả gần nhất
                 </span>
                 <ul>
                   {recentSearches?.map((data, index) => (
-                    <AvatarNameItem key={index} data={data} type={"AF"} />
+                    <AvatarNameItem key={index} data={data} handleClose={handleClose} messageApi={messageApi} contextHolder={contextHolder} type={"AF"} />
                   ))}
                 </ul>
               </div>

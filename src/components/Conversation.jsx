@@ -266,7 +266,7 @@ const Conversation = () => {
     const filteredConversations = conversation?.filter(
       (chat) => chat.chatName === chatName,
     );
-    if (filteredConversations.length > 0) {
+    if (filteredConversations?.length > 0) {
       setChatType(filteredConversations[0].type);
     }
   }, [JSON.parse(localStorage.getItem("conversations"))]);

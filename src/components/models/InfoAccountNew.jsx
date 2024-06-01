@@ -86,8 +86,62 @@ const AddFriendDialog2 = ({
   console.log("type", type);
   console.log("data", data);
 
-  const handleClose = () => {
-    console.log("Close");
+
+  const handleRemoveFriendRequest = () => {
+    const receiverID = data.userID;
+    const message = {
+      id: uuidv4(),
+      tum: "TUM02",
+      senderID: Cookies.get("userID"),
+      receiverID: receiverID,
+    };
+
+    const newSocket = new WebSocket(
+      `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${receiverID}`,
+    );
+
+    newSocket.onopen = () => {
+      console.warn(
+        `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
+        receiverID,
+        " OPENED",
+      );
+     
+      newSocket.send(JSON.stringify(message));
+      console.log("Message sent:", message);
+    };
+
+    newSocket.onmessage = (event) => {
+      console.log("Message received:", event.data);
+      
+    };
+
+    newSocket.onclose = () => {
+      console.warn(
+        `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
+        receiverID,
+        " CLOSED",
+      );
+    };
+    const updatedConversations = conversation?.map((conversation) => {
+      if (conversation.chatName === data.userName) {
+        return { ...conversation, type: "STRANGER" };
+      }
+      return conversation;
+    });
+
+    localStorage.setItem("conversations", JSON.stringify(updatedConversations));
+    setStatusF("STRANGER");
+  };
+
+  const [socket, setSocket] = useState(null);
+  const [messageApi, contextHolder] = message.useMessage();
+  const showMessage = (type, content) => {
+    messageApi.open({
+      type: type,
+      content: content,
+      duration: 10,
+    });
   };
 
   const sendMessage = () => {
@@ -137,16 +191,13 @@ const AddFriendDialog2 = ({
     setOpen(false);
     // setType("UN");
 
-    // Tìm và cập nhật phần tử trong mảng
     const updatedConversations = conversation?.map((conversation) => {
       if (conversation.chatName === data.userName) {
-        // Cập nhật lại thuộc tính type thành 'friend'
         return { ...conversation, type: "STRANGER" };
       }
       return conversation;
     });
 
-    // Lưu trở lại localStorage nếu cần
     localStorage.setItem("conversations", JSON.stringify(updatedConversations));
     setStatusF("STRANGER");
   };
@@ -187,10 +238,10 @@ const AddFriendDialog2 = ({
                 <button
                   className="mr-4 h-8 w-[178px] rounded border bg-[#EAEDF0] text-base font-medium text-tblack"
                   onClick={() => {
-                    handleClose();
+                    handleRemoveFriendRequest();
                   }}
                 >
-                  Huỷ kết bạn
+                  Thu hồi
                 </button>
                 <button className="h-8 w-[178px] rounded border bg-[#E5EFFF] text-base font-medium text-[#005ae0]">
                   Nhắn tin

@@ -105,7 +105,7 @@ export default function Router() {
             },
             { path: "listFriend/chat", element: <Conversation /> },
             { path: "listGroup/chatGroup", element: <ConversationGroup /> },
-            { path: "listfriendrequest", element: <TagFriendRequest /> },
+            { path: "listFriendRequest", element: <TagFriendRequest /> },
           ],
         },
         { path: "todo", element: <Todo /> },

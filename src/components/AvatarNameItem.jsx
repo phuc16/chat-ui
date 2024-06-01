@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
-import { message } from "antd";
 import Cookies from "js-cookie";
 import { v4 as uuidv4 } from "uuid";
 
 export default function AvatarNameItem({ data, setData, type, handleClose, messageApi, contextHolder }) {
   const defaultText = `Xin chào! Mình tìm thấy bạn bằng số điện thoại. Kết bạn với mình nhé!`;
   const conversation = JSON.parse(localStorage.getItem("conversations"));
-  const [type, setType] = useState("");
+  const [relationship, setRelationship] = useState("");
   const [conversationFriend, setConversationFriend] = useState([]);
+  const navigate = useNavigate();
 
-  console.log(conversation)
+  console.log(data)
   useEffect(() => {
     const filteredConversations = conversation?.filter(
       (chat) => chat.id_UserOrGroup === data.userID,
@@ -18,7 +19,7 @@ export default function AvatarNameItem({ data, setData, type, handleClose, messa
     console.log("filteredConversations", filteredConversations);
     setConversationFriend(filteredConversations);
     if (filteredConversations?.length > 0) {
-      setType(filteredConversations[0].type);
+      setRelationship(filteredConversations[0].type);
     }
   }, [data]);
   const success = () => {
@@ -27,6 +28,60 @@ export default function AvatarNameItem({ data, setData, type, handleClose, messa
       content: "Kết bạn thành công",
     });
   };
+
+  const successRemove = () => {
+    messageApi.open({
+      type: "success",
+      content: "Thu hồi lời mời thành công",
+    });
+  };
+  
+  const handleRemoveFriendRequest = (receiver) => {
+    const receiverID = receiver.userID;
+    const message = {
+      id: uuidv4(),
+      tum: "TUM02",
+      senderID: Cookies.get("userID"),
+      receiverID: receiverID,
+    };
+
+    const newSocket = new WebSocket(
+      `${process.env.REACT_APP_SOCKET_CHAT}/ws/user/${receiverID}`,
+    );
+
+    newSocket.onopen = () => {
+      console.warn(
+        `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
+        receiverID,
+        " OPENED",
+      );
+     
+      newSocket.send(JSON.stringify(message));
+      console.log("Message sent:", message);
+    };
+
+    newSocket.onmessage = (event) => {
+      console.log("Message received:", event.data);
+      
+    };
+
+    newSocket.onclose = () => {
+      console.warn(
+        `WebSocket '${process.env.REACT_APP_SOCKET_CHAT}/ws/user/' for UserID: `,
+        receiverID,
+        " CLOSED",
+      );
+    };
+    const updatedConversations = conversation?.map((conversation) => {
+      if (conversation.chatName === data.userName) {
+        return { ...conversation, type: "STRANGER" };
+      }
+      return conversation;
+    });
+
+    localStorage.setItem("conversations", JSON.stringify(updatedConversations));
+  };
+
   const handleAddSuggestedFriend = (friend) => {
     console.log(friend)
     console.log(`Add suggested friend: ${friend}`);
@@ -89,7 +144,7 @@ export default function AvatarNameItem({ data, setData, type, handleClose, messa
               <div>
                 {type === "AF" && (
                   <span className="text-base text-[#081C36]">
-                    {data.name}
+                    {data.userName}
                   </span>
                 )}
                 {type === "MS" && (
@@ -115,23 +170,58 @@ export default function AvatarNameItem({ data, setData, type, handleClose, messa
         </div>
         <div className="mt-[-4px] grid items-center justify-center gap-y-1">
           <div className="align-center flex-1 justify-center">
-            {type === "AF" && (
-              <div className="flex h-full items-center justify-center">
-                <span
-                  className="truncate text-lg"
-                  style={{ cursor: "pointer" }}
-                >
-                  &times;
-                </span>
-              </div>
-            )}
-            {type === "MS" && (
+            {relationship === "REQUESTS" ? (
+              <Button
+                onClick={() => {
+                  handleRemoveFriendRequest(data);
+                  successRemove();
+                      setTimeout(() => {
+                        handleClose();
+                      }, 700);
+                  }
+                }
+                variant="outlined"
+                size="small"
+                style={{
+                  textTransform: "none",
+                  color: "#0068FF",
+                  fontSize: 14,
+                  width: 84,
+                  height: 24,
+                  fontWeight: 500,
+                }}
+              >
+                Thu hồi
+              </Button>
+            ) : relationship === "FRIEND" ? (
+              <Button
+                onClick={() => {
+                  navigate(`/app/chat?id=${Cookies.get("userID").slice(0, 18) + data.userID.slice(18)}&type=individual-chat&chatName=${data.userName}&chatAvatar=${data.avatar}`)
+                  handleClose()
+                }
+                }
+                variant="outlined"
+                size="small"
+                style={{
+                  textTransform: "none",
+                  color: "#0068FF",
+                  fontSize: 14,
+                  width: 84,
+                  height: 24,
+                  fontWeight: 500,
+                }}
+              >
+                Nhắn tin
+              </Button>
+            ) : (
               <Button
                 onClick={() => {
                   handleAddSuggestedFriend(data);
                   success();
                   handleClose()
+                  if (type === "MS"){
                   setData((prevItems) => prevItems.filter(item => item.userID !== data.userID));
+                  }
                 }
                 }
                 variant="outlined"

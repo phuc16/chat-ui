@@ -63,7 +63,7 @@ function Contact() {
           />
         </ListItemButton>
 
-        <Link to="listfriendrequest">
+        <Link to="listFriendRequest">
           <ListItemButton
             className="h-[56px] w-full"
             id="addFriend"
