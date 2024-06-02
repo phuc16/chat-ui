@@ -184,7 +184,7 @@ const fetchGroup = async (id) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${cookies.get("token")}`,
         },
       },
     );
@@ -205,7 +205,7 @@ const reloadCons = async () => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token"),
+          Authorization: "Bearer " + cookies.get("token"),
         },
         method: "GET",
       },

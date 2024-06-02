@@ -468,7 +468,7 @@ const ConversationGroup = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${cookies.get("token")}`,
           },
         },
       );
@@ -500,7 +500,7 @@ const ConversationGroup = () => {
     const userID = getUserIDFromCookie();
     setUserIDFromCookies(userID);
     const tokenFromCookie = cookies.get("token");
-    const tokenFromLocalStore = localStorage.getItem("token");
+    const tokenFromLocalStore = cookies.get("token");
 
     if (tokenFromCookie) {
       setTokenFromCookies(tokenFromCookie)
@@ -518,7 +518,7 @@ const ConversationGroup = () => {
         id,
         startIndex,
         endIndex,
-        localStorage.getItem("token"),
+        cookies.get("token"),
       );
       setMessages(fetchedMessages);
     };
@@ -994,7 +994,7 @@ const ConversationGroup = () => {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + cookies.get("token"),
           },
           method: "GET",
         },

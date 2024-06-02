@@ -163,6 +163,7 @@ export default function RegisterUser() {
         //         return;
         //     })
     };
+    const phoneRegex = /^\d{10}$/;
 
     return (
         <ThemeProvider theme={theme}>
@@ -239,11 +240,15 @@ export default function RegisterUser() {
 
                 </div>
 
-                {flag && <div className="mx-2 mb-2 py-4">
-                    <span>
-                        <p className="text-red-600" >{error}</p>
-                    </span>
-                </div>}
+                {flag && (
+              <div className="mx-2 mb-2 py-4">
+                <span>
+                  <p className="text-red-600">
+                    { phoneRegex.test(phoneNumber) ? error : 'Số điện thoại phải đủ 10 số và không bao gồm ký tự'}
+                  </p>
+                </span>
+              </div>
+            )}
 
                 <div className="mt-6 px-2">
                     <button

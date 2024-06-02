@@ -100,6 +100,7 @@ export default function CreateGroup({ image }) {
   };
 
   const handleClose = async () => {
+    const cookies = new Cookies();
     setOpen(false);
     socket.close();
     try {
@@ -111,7 +112,7 @@ export default function CreateGroup({ image }) {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + cookies.get("token"),
           },
           method: "GET",
         },

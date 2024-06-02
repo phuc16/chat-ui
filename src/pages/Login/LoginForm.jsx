@@ -70,7 +70,18 @@ export default function LoginForm() {
         navigate("/app", {
           state: { token: data.accessToken, phoneNumber: phoneNumber },
         });
-
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
         setTokenInCookie(data.accessToken);
         setPhoneNumberInCookie(phoneNumber);
 

@@ -463,7 +463,7 @@ export default function AddFriendDialog() {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
+              Authorization: "Bearer " + Cookies.get("token"),
             },
             method: "GET",
           },
@@ -489,7 +489,7 @@ export default function AddFriendDialog() {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token"),
+              Authorization: "Bearer " + Cookies.get("token"),
             },
             method: "GET",
           },

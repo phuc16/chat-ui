@@ -71,9 +71,9 @@ export default function Router() {
     {
       path: "/",
       element: (
-        <ProtectedRoute>
+        // <ProtectedRoute>
           <DashboardLayout component={comp} />
-        </ProtectedRoute>
+        // </ProtectedRoute>
       ),
       children: [
         { element: <Navigate to="/app" replace />, index: true },

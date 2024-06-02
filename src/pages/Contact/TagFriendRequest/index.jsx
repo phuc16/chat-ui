@@ -5,7 +5,8 @@ import { message, Space } from "antd";
 import { v4 as uuidv4 } from "uuid";
 import Cookies from "universal-cookie"
 function TagFriendRequest() {
-  const tokenFromCookies = localStorage.getItem("token");
+  const cookies = new Cookies();
+  const tokenFromCookies = cookies.get("token");
   const userID = localStorage.getItem("userID");
   const [friendRequests, setFriendRequests] = useState([]);
   const [friendRequest, setFriendRequest] = useState([]);

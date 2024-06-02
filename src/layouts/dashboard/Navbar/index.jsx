@@ -391,7 +391,7 @@ function Navbar({ onNavbarReady }) {
                         onClose={handleClosePopup}
                         data={JSON.parse(localStorage.getItem("user"))}
                         phoneNumber={localStorage.getItem("phone")}
-                        token={localStorage.getItem("token")}
+                        token={cookies.get("token")}
                       />
                       <MenuItem
                         sx={{
