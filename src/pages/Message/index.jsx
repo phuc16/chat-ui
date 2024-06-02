@@ -180,7 +180,7 @@ useEffect(() => {
 const fetchGroup = async (id) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_HOST}/api/v1/group/info?idGroup=${id}`,
+      `${process.env.REACT_APP_SERVER_HOST}/api/v1/group/info?groupID=${id}`,
       {
         headers: {
           "Content-Type": "application/json",
