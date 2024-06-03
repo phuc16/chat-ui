@@ -562,7 +562,7 @@ const Conversation = () => {
               // console.log("Message____________________:", messages);
               setIdA(jsonData.id);
               if (jsonData) {
-                const messageExists = messages.some(
+                const messageExists = messages?.some(
                   (msg) => msg.id === jsonData.id,
                 );
                 if (!messageExists) {
@@ -1080,14 +1080,14 @@ const Conversation = () => {
     setOpenRightBar(!openRightBar);
     const imageMessages = messages?.filter(
       (message) =>
-        message.contents.some((content) => content.key === "image") &&
+        message?.contents?.some((content) => content.key === "image") &&
         message.hidden.length === 0 &&
         message.recall === false,
     );
     setListImage(imageMessages);
 
     const linkMessages = messages?.filter((message) => {
-      return message.contents.some((content) => content.key === "link");
+      return message?.contents?.some((content) => content.key === "link");
     });
     // const filteredMessages = messages?.filter((message) => {
     //   return (
@@ -1100,7 +1100,7 @@ const Conversation = () => {
     setListLink(linkMessages);
 
     const fileMessages = messages?.filter((message) => {
-      return message.contents.some((content) => {
+      return message?.contents?.some((content) => {
         return (content.key.match(/\|/g) || []).length >= 2;
       });
     });

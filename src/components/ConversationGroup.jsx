@@ -719,7 +719,7 @@ const ConversationGroup = () => {
               console.log("Message____________________:", messages);
               setIdA(jsonData.id);
               if (jsonData) {
-                const messageExists = messages.some(
+                const messageExists = messages?.some(
                   (msg) => msg.id === jsonData.id,
                 );
                 if (!messageExists) {
@@ -1381,7 +1381,7 @@ const ConversationGroup = () => {
                         {conversations ? conversations?.map((conversation) => {
                           // console.log("lò"+group.members);
                           if (!((group.owner.userID === conversation.id_UserOrGroup)
-                            || (group.admin.some(item => item["userID"] === conversation.id_UserOrGroup)) || (group.members.some(item => item["userID"] === conversation.id_UserOrGroup)))) {
+                            || (group.admin?.some(item => item["userID"] === conversation.id_UserOrGroup)) || (group.members?.some(item => item["userID"] === conversation.id_UserOrGroup)))) {
 
                             return (
                               <li
@@ -1490,11 +1490,11 @@ const ConversationGroup = () => {
                 <FontAwesomeIcon className="mr-2" icon={faTrashCan} /> Xóa lịch sử cuộc trò chuyện
               </button>
 
-              {(group.owner.userID === localStorage.getItem("userID") || group.admin.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleDeleteGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
+              {(group.owner.userID === localStorage.getItem("userID") || group.admin?.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleDeleteGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
                 <FontAwesomeIcon className="mr-2" icon={faArrowRightFromBracket} /> Giải tán nhóm
               </button>}
 
-              {!(group.owner.userID === localStorage.getItem("userID") || group.admin.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleOutGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
+              {!(group.owner.userID === localStorage.getItem("userID") || group.admin?.some(item => item["userID"] === localStorage.getItem("userID"))) && <button onClick={handleOutGroup} className="flex w-full items-center p-2 text-red-600 rounded-lg hover:bg-gray-200">
                 <FontAwesomeIcon className="mr-2" icon={faArrowRightFromBracket} /> Rời nhóm
               </button>}
             </div>
