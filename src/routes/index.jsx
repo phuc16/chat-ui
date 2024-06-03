@@ -26,7 +26,7 @@ import { Stack } from "@mui/material";
 import { Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import ForgotPasswordForm from "../pages/Login/ForgotPasswordForm";
-import ResetPasseordForm from "../pages/Login/ResetPasseordForm";
+import ResetPasswordForm from "../pages/Login/ResetPasswordForm";
 // import VideoCall from "../pages/VideoCalll";
 import TagFriendRequest from "../pages/Contact/TagFriendRequest";
 
@@ -64,19 +64,19 @@ export default function Router() {
       children: [
         { path: "login", element: <LoginForm /> },
         { path: "forgot-password", element: <ForgotPasswordForm /> },
-        { path: "reset-password", element: <ResetPasseordForm /> },
+        { path: "reset-password", element: <ResetPasswordForm /> },
         { path: "register-user", element: <RegisterUser /> },
       ],
     },
     {
       path: "/",
       element: (
-        // <ProtectedRoute>
+        <ProtectedRoute>
           <DashboardLayout component={comp} />
-        // </ProtectedRoute>
+        </ProtectedRoute>
       ),
       children: [
-        { element: <Navigate to="/app" replace />, index: true },
+        // { element: <Navigate to="/app" replace />, index: true },
         {
           path: "/app",
           element: <MessageFilterBar />,

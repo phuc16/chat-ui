@@ -10,7 +10,7 @@ const UnprotectedRoute = ({ children }) => {
     if (!user) {
         return children;
     }
-    return <Navigate to="/auth/login" replace />;
+    return <Navigate to="/app" replace />;
 };
 
 export default UnprotectedRoute;

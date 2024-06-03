@@ -9,7 +9,7 @@
     import { encryptData } from "../../utils/cookies";
     import { convertPhoneNumber } from "../../utils/phoneNumber";
 
-    export default function ResetPasseordForm() {
+    export default function ResetPasswordForm() {
         const cookies = new Cookies();
         const navigate = useNavigate();
         const [password, setPassword] = useState("");
