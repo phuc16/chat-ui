@@ -44,7 +44,7 @@ export default function LoginForm() {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_SERVER_HOST}/api/auth/login`,
+        `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/login`,
         {
           method: "POST",
           headers: {
@@ -57,7 +57,7 @@ export default function LoginForm() {
         },
       );
       const data = await response.json();
-      if (response.status == 401) {
+      if (response.status === 401) {
         setFlag(true);
         setError(data.msg)
         console.error("Failed login");
@@ -70,7 +70,18 @@ export default function LoginForm() {
         navigate("/app", {
           state: { token: data.accessToken, phoneNumber: phoneNumber },
         });
-
+        const allCookies = cookies.getAll();
+        for (const cookieName in allCookies) {
+          if (allCookies.hasOwnProperty(cookieName)) {
+            cookies.remove(cookieName, {
+              path: "/",
+            });
+            cookies.remove(cookieName, {
+              path: "/auth",
+            });
+          }
+        }
+        localStorage.clear();
         setTokenInCookie(data.accessToken);
         setPhoneNumberInCookie(phoneNumber);
 
@@ -126,6 +137,7 @@ export default function LoginForm() {
               <FontAwesomeIcon icon={faLock} className="mx-3" />
               <input
                 id="input-password"
+                type="password"
                 placeholder="Mật khẩu"
                 className="mx-3 w-64 px-3 focus:outline-none"
                 onChange={(event) => {
@@ -208,7 +220,7 @@ export default function LoginForm() {
             </p>
 
             <p className="text-black-600 mb-3 w-60 text-center text-base font-normal">
-              Zalo trên máy tính
+              Zalo trên máy tính - TODO
             </p>
           </div>
 

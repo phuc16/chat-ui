@@ -1,8 +1,27 @@
+import React, { useEffect, useRef, useState } from "react";
+import {
+    createTheme,
+    ThemeProvider
+} from "@mui/material/styles";
 import { faAnglesLeft, faLock, faMobileScreen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
-import { useNavigate, useLocation} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { auth } from "../../configs/firebaseConfig";
+import { RecaptchaVerifier, signInWithCredential, signInWithPhoneNumber } from "@firebase/auth";
+import { PhoneAuthProvider } from "firebase/auth";
 import { convertPhoneNumber } from "../../utils/phoneNumber";
+import { message } from "antd";
+
+const theme = createTheme({
+    palette: {
+        silver: {
+            main: "#eaedf0",
+            light: "#F5EBFF",
+            dark: "#eaedf0",
+            contrastText: "#081c36",
+        },
+    },
+});
 
 export default function RegisterUser() {
     const navigate = useNavigate();
@@ -12,10 +31,44 @@ export default function RegisterUser() {
     const [error, setError] = useState("")
     const location = useLocation()
     const [phoneNumber, setPhoneNumber] = useState(location.state?.phoneNumber);
-    
+    const [isSendOtp, setIsSendOtp] = useState(true);
+    const [otp, setOtp] = useState("");
+    const [verificationId, setVerificationId] = useState(null);
+    const [messageApi, contextHolder] = message.useMessage();
+    const success = () => {
+        messageApi.open({
+            type: "success",
+            content: "Đăng ký tài khoản thành công",
+        });
+    }
+    const setUpRecaptcha = () => {
+        window.recaptcha = new RecaptchaVerifier(auth, "recaptcha", {})
+    };
+    const handleSendOTP = async (e) => {
+        e.preventDefault();
+        try {
+            console.log(auth);
+            console.log(phoneNumber);
+            setUpRecaptcha();
+            const recaptcha = window.recaptcha
+            await signInWithPhoneNumber(auth, convertPhoneNumber(phoneNumber), recaptcha)
+                .then((confirmationResult) => {
+                    setIsSendOtp(false);
+                    console.log(confirmationResult);
+                    setVerificationId(confirmationResult)
+                    console.log("OTP sended successfully!");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
 
-    console.log(phoneNumber);
-    console.log(verifyPassword);
+        } catch (error) {
+            setFlag(true)
+            setError("Gửi mã OTP thất bại")
+            console.error('Gửi mã OTP thất bại:', error);
+            console.log('Gửi mã OTP thất bại', error);
+        }
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -23,12 +76,22 @@ export default function RegisterUser() {
             setFlag(true)
             setError("Xác nhận mật khẩu không chính xác")
             console.error("Failed reset password");
-            return ;
+            return;
         }
-        
+
+        // hard code ignore otp
+        console.log("hard code ignore otp")
+        // if (otp !== "111111") {
+        //     setFlag(true)
+        //     setError("Mã xác thực không đúng")
+        //     console.error("Mã xác thực không đúng", error);
+        //     return;
+        // }
+
+        // hard code ignore otp
         try {
             const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/auth/register`,
+                `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {
@@ -42,84 +105,160 @@ export default function RegisterUser() {
             );
             const data = await response.json();
             if (response.ok) {
-                navigate("/auth/login");
                 console.log("API call successful");
+                success();
+                setTimeout(() => {
+                    navigate("/");
+                }, 3500);
+                navigate("/auth/login");
             } else {
                 setFlag(true)
                 setError(data.msg)
                 console.error("API call failed");
             }
         } catch (error) {
-            navigate("/");
             console.error("Error calling API:", error);
+            navigate("/");
         }
+
+        // use otp
+        // const credential = PhoneAuthProvider.credential(verificationId.verificationId, otp);
+
+        // await signInWithCredential(auth, credential)
+        //     .then(async () => {
+        //         setOtp('')
+        //         try {
+        //             const response = await fetch(
+        //                 `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/register`,
+        //                 {
+        //                     method: "POST",
+        //                     headers: {
+        //                         "Content-Type": "application/json",
+        //                     },
+        //                     body: JSON.stringify({
+        //                         phoneNumber: phoneNumber,
+        //                         password: password,
+        //                     }),
+        //                 },
+        //             );
+        //             const data = await response.json();
+        //             if (response.ok) {
+        // success();
+        //                 navigate("/auth/login");
+        //                 console.log("API call successful");
+        //             } else {
+        //                 setFlag(true)
+        //                 setError(data.msg)
+        //                 console.error("API call failed");
+        //             }
+        //         } catch (error) {
+        //             navigate("/");
+        //             console.error("Error calling API:", error);
+        //         }
+        //     })
+        //     .catch(error => {
+        //         setFlag(true)
+        //         setError("Mã xác thực không đúng")
+        //         console.error("Mã xác thực không đúng", error);
+        //         return;
+        //     })
     };
+    const phoneRegex = /^\d{10}$/;
 
-return (
-    <div>
+    return (
+        <ThemeProvider theme={theme}>
+            {contextHolder}
+            <h3 className="text-center text-xl mt-10">Tạo tài khoản</h3>
+            <form className="mt-2  px-7">
+                <div className="-ml-2 w-full items-center">
+                    <div className="mx-2 mb-2 flex w-full items-center border-b-2 py-4">
+                        <FontAwesomeIcon icon={faMobileScreen} className="mx-3" />
 
-        <h3 className="text-center text-xl mt-10">Tạo tài khoản</h3>
+                        <input
+                            id="input-phone"
+                            placeholder="Số điện thoại"
+                            className="mr-1 w-full px-3 py-1 focus:outline-none"
+                            onChange={(event) => {
+                                setPhoneNumber(event.target.value);
+                            }}
+                        ></input>
+                    </div>
+                </div>
 
-        <form onSubmit={handleRegister}  className="mt-2  px-7">
-        <div className="-ml-2 w-full items-center">
-            <div className="mx-2 mb-2 flex w-full items-center border-b-2 py-4">
-                <FontAwesomeIcon icon={faMobileScreen} className="mx-3" />
+                {isSendOtp && <div id="recaptcha" className="flex justify-center mt-3"></div>}
+                {!isSendOtp &&
+                    <div>
+                        <div className="text-center bg-blue-50 mb-2 border-b-2 py-4 m-10">
+                            <p className="text-xs">Gửi tin nhắn để nhận mã xác thực</p>
+                            <p className="text-blue-400 font-bold text-xl p-2">{phoneNumber}</p>
+                            <input
+                                id="input-password"
+                                placeholder="Nhập mã kích hoạt"
+                                className=" focus:outline-none py-2 px-5 text-center rounded-lg border-b-2"
+                                onChange={(event) => {
+                                    setOtp(event.target.value);
+                                }}
+                            ></input>
+                        </div>
+                    </div>
+                }
+                {isSendOtp && <div className="mt-6 px-2">
+                    <button
+                        className="w-full transform rounded-md bg-blue-400 py-2 tracking-wide text-white transition-colors duration-200"
+                        // type="submit"
+                        onClick={handleSendOTP}
+                    >
+                        Xác thực
+                    </button>
+                </div>}
+            </form>
+            <form onSubmit={handleRegister} className="mt-2  px-7">
+                <div className="mx-2 mb-2 border-b-2 py-4">
+                    <FontAwesomeIcon icon={faLock} className="mx-3" />
+                    <input
+                        id="input-password"
+                        type="password"
+                        placeholder="Gồm 2-40 kí tự"
+                        className="mx-3 px-3 focus:outline-none"
+                        onChange={(event) => {
+                            setPassword(event.target.value);
+                        }}
+                    ></input>
+                </div>
 
-                <input
-                  id="input-phone"
-                  placeholder="Số điện thoại"
-                  className="mr-1 w-full px-3 py-1 focus:outline-none"
-                  onChange={(event) => {
-                    setPhoneNumber(event.target.value);
-                  }}
-                ></input>
-              </div>
-            </div>
-            <div className="mx-2 mb-2 border-b-2 py-4">
-                <FontAwesomeIcon icon={faLock} className="mx-3" />
-                <input
-                    id="input-password"
-                    placeholder="Gồm 2-40 kí tự"
-                    className="mx-3 px-3 focus:outline-none"
-                    onChange={(event) => {
-                    setPassword(event.target.value);
-                    }}
-                ></input>
-            </div>
+                <div className="mx-2 mb-2 border-b-2 py-4">
+                    <FontAwesomeIcon icon={faLock} className="mx-3" />
+                    <input
+                        id="input-password"
+                        type="password"
+                        placeholder="Nhập lại mật khẩu"
+                        className="mx-3 px-3 focus:outline-none"
+                        onChange={(event) => {
+                            setVerifyPassword(event.target.value);
+                        }}
+                    ></input>
 
-            <div className="mx-2 mb-2 border-b-2 py-4">
-                <FontAwesomeIcon icon={faLock} className="mx-3" />
-                <input
-                    id="input-password"
-                    placeholder="Nhập lại mật khẩu"
-                    className="mx-3 px-3 focus:outline-none"
-                    onChange={(event) => {
-                    setVerifyPassword(event.target.value);
-                    }}
-                ></input>
+                </div>
 
-            </div>
-
-            {flag && <div className="mx-2 mb-2 py-4">
+                {flag && (
+              <div className="mx-2 mb-2 py-4">
                 <span>
-                    <p className="text-red-600" >{error}</p>
+                  <p className="text-red-600">
+                    { phoneRegex.test(phoneNumber) ? error : 'Số điện thoại phải đủ 10 số và không bao gồm ký tự'}
+                  </p>
                 </span>
-            </div>}
+              </div>
+            )}
 
-            <div className="mt-6 px-2">
-                <button
-                    className="w-full transform rounded-md bg-blue-400 py-2 tracking-wide text-white transition-colors duration-200"
-                    type="submit"
-                >
-                    Xác nhận
-                </button>
-            </div>
-
-            
-        </form>
-
-
-        
-    </div>
-)
+                <div className="mt-6 px-2">
+                    <button
+                        className="w-full transform rounded-md bg-blue-400 py-2 tracking-wide text-white transition-colors duration-200"
+                        type="submit"
+                    >
+                        Xác nhận
+                    </button>
+                </div>
+            </form>
+        </ThemeProvider>
+    )
 }

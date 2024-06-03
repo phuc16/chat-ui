@@ -32,8 +32,8 @@
         const sendOTP = async (phoneNumber) => {
             try {
                 console.log(phoneNumber);
-                const recapcha = new RecaptchaVerifier(auth, "recaptcha", {})
-                await signInWithPhoneNumber(auth, phoneNumber, recapcha)
+                const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {})
+                await signInWithPhoneNumber(auth, phoneNumber, recaptcha)
                     .then((confirmationResult) => {
                         setIsSendOtp(false);
                         console.log(confirmationResult);
@@ -75,7 +75,7 @@
             
             try {
             const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/users/reset-password`,
+                `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/reset-password`,
                 {
                     method: "PUT",
                     headers: {
@@ -124,6 +124,7 @@
                     <FontAwesomeIcon icon={faLock} className="mx-3" />
                     <input
                         id="input-password"
+                        type="password"
                         placeholder="Vui lòng nhập mật khẩu"
                         className="mx-3 px-3 focus:outline-none"
                         onChange={(event) => {
@@ -136,6 +137,7 @@
                     <FontAwesomeIcon icon={faLock} className="mx-3" />
                     <input
                         id="input-password"
+                        type="password"
                         placeholder="Nhập lại mật khẩu"
                         className="mx-3 px-3 focus:outline-none"
                         onChange={(event) => {
