@@ -24,7 +24,7 @@ export default function ForgotPasswordForm() {
         e.preventDefault();
         try {
             const response = await fetch(
-                `${process.env.REACT_APP_SERVER_HOST}/api/v1/auth/check-phone`,
+                `${process.env.REACT_APP_SERVER_HOST}/api/v1/account/check-phone`,
                 {
                   method: "POST",
                   headers: {
